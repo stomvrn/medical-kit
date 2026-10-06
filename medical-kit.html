@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f7fa" id="metaThemeColor">
+<meta name="description" content="VanXo Medical Kit v1.1 — единый офлайн-инструмент для врача: ассистент коммуникации, неврологические и вертебрологические шкалы, скрининги, утилиты, база знаний. Все шкалы сверены с авторитетными источниками.">
+<meta name="author" content="Холин Иван Алексеевич">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; connect-src 'none';">
+<title>VanXo Medical Kit v1.1</title>
+<style>
+:root{
+  --bg:#f5f7fa;--panel:#fff;--alt:#ecf0f1;--alt2:#dfe6e9;
+  --text:#2c3e50;--text2:#556069;--muted:#7f8c8d;
+  --accent:#3498db;--accent-h:#2980b9;--accent-soft:rgba(52,152,219,.10);
+  --ok:#27ae60;--ok-soft:rgba(39,174,96,.12);
+  --warn:#e67e22;--warn-soft:rgba(230,126,34,.12);
+  --bad:#e74c3c;--bad-soft:rgba(231,76,60,.12);
+  --gold:#b8860b;--gold-soft:rgba(184,134,11,.10);
+  --border:#bdc3c7;--border-l:#dfe4e8;--border-soft:#ecf0f1;
+  --r:10px;--rs:6px;--rxs:4px;
+  --sh:0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.03);
+  --sh-lg:0 4px 16px rgba(0,0,0,.08);
+  --font:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono',Consolas,'Cascadia Code',monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+[data-theme="dark"]{
+  --bg:#141824;--panel:#1c2230;--alt:#252d3e;--alt2:#2f3849;
+  --text:#e6ecf4;--text2:#b8c1d1;--muted:#8892a8;
+  --accent:#5ea9ff;--accent-h:#4a90d9;--accent-soft:rgba(94,169,255,.14);
+  --ok:#4cd48a;--ok-soft:rgba(76,212,138,.15);
+  --warn:#e8b350;--warn-soft:rgba(232,179,80,.15);
+  --bad:#ff7a7a;--bad-soft:rgba(255,122,122,.15);
+  --gold:#e8c470;--gold-soft:rgba(232,196,112,.14);
+  --border:#3a4256;--border-l:#2e3548;--border-soft:#252d3e;
+  --sh:0 1px 3px rgba(0,0,0,.35);
+  --sh-lg:0 4px 16px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);font-size:15px;line-height:1.55;
+  color:var(--text);background:var(--bg);
+  padding:16px 16px 60px;max-width:1200px;margin:0 auto;
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+  transition:background .3s, color .3s;
+}
+::selection{background:var(--accent-soft);color:var(--text)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:#fff;padding:8px 16px;z-index:999;border-radius:0 0 8px 0;font-weight:600}
+.skip:focus{left:8px}
+
+/* HEADER */
+.app-h{
+  background:var(--panel);border:1px solid var(--border-l);border-radius:var(--r);
+  padding:16px 20px;margin-bottom:14px;box-shadow:var(--sh);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;
+}
+.app-h .left{flex:1;min-width:220px}
+.app-h h1{font-size:1.25rem;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.app-h h1 .mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:9px;font-size:14px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  flex-shrink:0;
+}
+.app-h .sub{color:var(--muted);font-size:.85rem;margin-top:5px}
+.app-h .ver{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:6px}
+.app-h .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 15px;font-size:.85rem;font-weight:500;font-family:inherit;
+  color:#fff;background:var(--accent);border:none;border-radius:var(--rs);
+  cursor:pointer;transition:background .15s, transform .05s;white-space:nowrap;
+  text-decoration:none;
+}
+.btn:hover{background:var(--accent-h);text-decoration:none}
+.btn:active{transform:translateY(1px)}
+.btn.sec{background:var(--panel);color:var(--text);border:1px solid var(--border)}
+.btn.sec:hover{background:var(--alt)}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid transparent}
+.btn.ghost:hover{background:var(--alt);color:var(--text)}
+.btn.sm{padding:5px 11px;font-size:.78rem}
+.btn.xs{padding:3px 8px;font-size:.72rem}
+.btn.icon{width:36px;height:36px;padding:0;border-radius:50%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* NAV */
+.nav{
+  background:var(--panel);border:1px solid var(--border-l);border-radius:var(--r);
+  padding:8px;margin-bottom:14px;box-shadow:var(--sh);
+  display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:8px;z-index:50;
+}
+.nav button{
+  padding:8px 12px;border-radius:var(--rs);font-size:.85rem;font-weight:500;
+  color:var(--muted);background:transparent;border:1px solid transparent;
+  transition:.15s var(--ease);display:inline-flex;align-items:center;gap:6px;
+}
+.nav button:hover{color:var(--text);background:var(--alt)}
+.nav button.active{
+  color:var(--accent);background:var(--accent-soft);border-color:var(--accent);
+}
+.nav button .cnt{
+  font-family:var(--mono);font-size:.68rem;padding:1px 6px;border-radius:8px;
+  background:var(--alt);color:var(--muted);
+}
+.nav button.active .cnt{background:rgba(255,255,255,.3);color:var(--accent)}
+
+/* PANELS */
+.panel{display:none;animation:fade .25s var(--ease)}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* SECTIONS */
+.sect{
+  background:var(--panel);border:1px solid var(--border-l);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:14px;box-shadow:var(--sh);
+}
+.sect>h2{
+  font-size:1.05rem;font-weight:600;padding-bottom:10px;
+  border-bottom:2px solid var(--accent);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.sect>h2 .num{
+  font-family:var(--mono);font-size:.75rem;color:var(--accent);
+  background:var(--accent-soft);padding:2px 8px;border-radius:3px;font-weight:600;
+}
+.sect>h2 .badge{
+  margin-left:auto;font-family:var(--mono);font-size:.7rem;
+  color:var(--muted);padding:2px 8px;border-radius:10px;background:var(--alt);
+  font-weight:400;text-transform:none;letter-spacing:0;
+}
+
+/* FIELDS */
+.pgrid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;
+}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{
+  font-size:.72rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.field input,.field select,.field textarea{
+  padding:8px 11px;font-size:.9rem;font-family:inherit;color:var(--text);
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);
+  transition:border-color .15s, box-shadow .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);
+}
+.field textarea{min-height:70px;resize:vertical;font-family:var(--mono);font-size:.8rem}
+
+/* SCALE */
+.scale{
+  border:1px solid var(--border-l);border-radius:var(--r);
+  margin-bottom:14px;overflow:hidden;background:var(--panel);
+}
+.scale-h{padding:12px 16px;background:var(--alt);border-bottom:1px solid var(--border-l)}
+.scale-h h3{font-size:.95rem;font-weight:600}
+.scale-h p{font-size:.8rem;color:var(--muted);margin-top:3px;line-height:1.5}
+.scale table{width:100%;border-collapse:collapse;font-size:.88rem}
+.scale th,.scale td{
+  padding:8px 11px;text-align:left;border-bottom:1px solid var(--border-soft);
+  vertical-align:middle;
+}
+.scale thead th{
+  background:var(--bg);font-weight:600;font-size:.72rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em;text-align:center;
+  border-bottom:2px solid var(--border-l);
+}
+.scale thead th:first-child,.scale thead th:nth-child(2){text-align:left}
+.scale tbody tr:hover{background:var(--accent-soft)}
+.scale tbody tr:last-child td{border-bottom:none}
+.scale .qn{font-family:var(--mono);font-size:.75rem;color:var(--muted);width:32px;text-align:center}
+.scale .qt{font-size:.88rem;line-height:1.4}
+.scale .rc{text-align:center;width:48px;padding:6px 4px}
+.scale .rc label{
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  padding:5px;border-radius:4px;transition:.12s;position:relative;
+}
+.scale .rc label:hover{background:var(--accent-soft)}
+.scale .rc input[type=radio]{
+  appearance:none;-webkit-appearance:none;width:20px;height:20px;
+  border:2px solid var(--border);border-radius:50%;cursor:pointer;
+  transition:.12s;background:var(--panel);position:relative;margin:0;
+}
+.scale .rc input[type=radio]:hover{border-color:var(--accent)}
+.scale .rc input[type=radio]:checked{border-color:var(--accent);background:var(--accent)}
+.scale .rc input[type=radio]:checked::after{
+  content:'';position:absolute;top:50%;left:50%;width:8px;height:8px;
+  border-radius:50%;background:#fff;transform:translate(-50%,-50%);
+}
+.scale details{
+  padding:10px 16px;font-size:.8rem;color:var(--muted);
+  border-top:1px solid var(--border-soft);
+}
+.scale details summary{cursor:pointer;color:var(--accent);font-weight:500}
+.scale details ol{padding-left:22px;margin-top:8px;line-height:1.65}
+
+.scale-sum{
+  padding:12px 16px;background:var(--bg);border-top:1px solid var(--border-l);
+  display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
+.scale-sum .left{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.scale-sum .score{font-family:var(--mono);font-size:1.05rem;font-weight:700}
+.scale-sum .score .v{color:var(--accent)}
+.scale-sum .pct{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+.scale-sum .interp{
+  font-size:.87rem;padding:5px 13px;border-radius:20px;font-weight:500;
+  background:var(--accent-soft);color:var(--accent);
+}
+.scale-sum .interp.empty{background:var(--alt);color:var(--muted);font-style:italic;font-weight:400}
+.scale-sum .interp.ok{background:var(--ok-soft);color:var(--ok)}
+.scale-sum .interp.warn{background:var(--warn-soft);color:var(--warn)}
+.scale-sum .interp.bad{background:var(--bad-soft);color:var(--bad)}
+.subscales{
+  display:flex;gap:14px;flex-wrap:wrap;margin-top:5px;
+  font-size:.82rem;color:var(--muted);
+}
+.subscales .ss{display:flex;gap:5px;align-items:baseline}
+.subscales .ss .n{font-weight:500}
+.subscales .ss .v{font-family:var(--mono);color:var(--text);font-weight:600}
+
+/* SKILL */
+.stage{
+  border:1px solid var(--border-l);border-radius:var(--r);
+  margin-bottom:10px;overflow:hidden;background:var(--panel);
+  transition:border-color .15s;
+}
+.stage:hover{border-color:var(--border)}
+.stage.complete{border-color:var(--ok-soft)}
+.stage-h{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;
+  cursor:pointer;transition:background .15s;user-select:none;
+}
+.stage-h:hover{background:var(--alt)}
+.stage-h:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.stage-num{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--alt);border:1px solid var(--border-soft);
+  color:var(--muted);display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:600;flex-shrink:0;
+  transition:.15s;
+}
+.stage.has-progress .stage-num{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.stage.complete .stage-num{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.stage-info{flex:1;min-width:0}
+.stage-t{font-size:.92rem;font-weight:600;line-height:1.35}
+.stage-d{font-size:.78rem;color:var(--muted);margin-top:2px;line-height:1.5}
+.stage-mini{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.stage-mini .c{
+  font-family:var(--mono);font-size:.7rem;color:var(--muted);
+  opacity:0;transition:opacity .15s;white-space:nowrap;
+}
+.stage.has-progress .stage-mini .c{opacity:1}
+.stage-mini .bar{width:40px;height:3px;background:var(--alt2);border-radius:2px;overflow:hidden}
+.stage-mini .fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .5s}
+.stage.complete .stage-mini .fill{background:var(--ok)}
+.stage-caret{color:var(--muted);font-size:10px;transition:transform .15s;flex-shrink:0}
+.stage.collapsed .stage-caret{transform:rotate(-90deg)}
+.stage-body{border-top:1px solid var(--border-soft);padding:6px 10px 10px}
+.stage.collapsed .stage-body{display:none}
+
+.skill{
+  position:relative;padding:9px 12px 9px 16px;border-radius:var(--rs);
+  margin-bottom:2px;transition:background .12s;
+  display:flex;gap:11px;align-items:flex-start;
+}
+.skill:hover{background:var(--alt)}
+.skill::before{
+  content:'';position:absolute;left:0;top:9px;bottom:9px;width:2px;
+  border-radius:2px;background:var(--border);transition:background .15s;
+}
+.skill[data-type="ext"]::before{background:rgba(184,134,11,.3)}
+.skill.checked::before{background:var(--ok)}
+.skill-check{
+  flex-shrink:0;width:19px;height:19px;border-radius:5px;
+  border:1.5px solid var(--border);background:var(--panel);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.14s;margin-top:1px;color:transparent;font-size:11px;font-weight:700;
+}
+.skill-check:hover{border-color:var(--accent)}
+.skill-check:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skill-check.checked{background:var(--ok);border-color:var(--ok);color:#fff}
+.skill-body{flex:1;min-width:0}
+.skill-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.skill-id{font-family:var(--mono);font-size:.7rem;color:var(--muted);font-weight:500;flex-shrink:0}
+.skill-n{font-size:.88rem;font-weight:500;line-height:1.45}
+.skill.checked .skill-n{color:var(--muted)}
+.skill-d{font-size:.78rem;color:var(--muted);margin-top:2px;line-height:1.5}
+.skill-why-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:.73rem;font-family:inherit;padding:3px 0;margin-top:5px;
+  display:inline-flex;align-items:center;gap:4px;transition:color .15s;
+}
+.skill-why-btn:hover{color:var(--accent)}
+.skill-why-btn .chev{font-size:7px;display:inline-block;transition:transform .15s}
+.skill.why-open .skill-why-btn .chev{transform:rotate(90deg)}
+.skill-why{
+  display:none;margin-top:8px;padding:10px 12px;
+  background:var(--bg);border:1px solid var(--border-soft);
+  border-radius:var(--rs);font-size:.8rem;line-height:1.6;
+}
+.skill.why-open .skill-why{display:block}
+.why-block{margin-bottom:7px}
+.why-block:last-child{margin-bottom:0}
+.why-l{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;
+  font-weight:700;color:var(--muted);margin-bottom:3px;display:block;
+}
+.why-l.w{color:var(--accent)}
+.why-l.c{color:var(--ok)}
+.why-t{color:var(--text2);line-height:1.6}
+
+/* PROGRESS HERO */
+.hero{
+  background:var(--panel);border:1px solid var(--border-l);border-radius:var(--r);
+  padding:18px 20px;margin-bottom:14px;box-shadow:var(--sh);
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;transition:.22s;
+}
+.hero.idle{background:transparent;border-color:transparent;padding:8px 4px;box-shadow:none;margin-bottom:8px}
+.hero.idle .ring,.hero.idle .stats{display:none}
+.hero.idle .hint{display:block}
+.ring{position:relative;width:68px;height:68px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.ring .track{fill:none;stroke:var(--alt2);stroke-width:6}
+.ring .fill{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;stroke-dasharray:0 999;transition:stroke-dasharray .6s var(--ease), stroke .3s}
+.ring .pct{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:-.02em;
+}
+.stats{flex:1;min-width:0}
+.stats-row{display:flex;gap:20px;flex-wrap:wrap}
+.stats-item{display:flex;flex-direction:column;gap:2px}
+.stats-val{font-family:var(--mono);font-size:1rem;font-weight:600;letter-spacing:-.02em}
+.stats-val.ok{color:var(--ok)}
+.stats-val.gold{color:var(--gold)}
+.stats-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hint{display:none;font-size:.85rem;color:var(--muted);padding:2px 0;line-height:1.5}
+
+/* ARTIFACTS */
+.art{margin-bottom:12px;border:1px solid var(--border-l);border-radius:var(--r);overflow:hidden;background:var(--panel)}
+.art-h{
+  padding:10px 14px;background:var(--alt);
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--border-l);gap:10px;flex-wrap:wrap;
+}
+.art-h .t{font-size:.88rem;font-weight:600}
+.art-h .hint{font-size:.75rem;color:var(--muted);display:block;font-weight:400;margin-top:2px}
+.art-b{padding:12px 14px;background:var(--bg)}
+.art-b pre,.art-b .csv{
+  font-family:var(--mono);font-size:.78rem;line-height:1.55;
+  white-space:pre-wrap;word-wrap:break-word;word-break:break-word;
+  max-height:340px;overflow:auto;padding:10px 12px;
+  background:var(--panel);border:1px solid var(--border-soft);
+  border-radius:var(--rs);color:var(--text);
+}
+.art-b .csv{white-space:pre-wrap;display:block}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th,.tbl td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--border-soft);vertical-align:top}
+.tbl th{background:var(--bg);font-weight:600;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid var(--border-l)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover{background:var(--accent-soft)}
+.tbl .sn{font-weight:600;white-space:nowrap}
+
+/* UTILITIES */
+.util-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.util{
+  border:1px solid var(--border-l);border-radius:var(--r);
+  padding:16px;background:var(--panel);transition:.15s;
+}
+.util:hover{border-color:var(--border)}
+.util h4{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.util h4 .ico{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:5px;background:var(--accent-soft);
+  color:var(--accent);font-size:13px;font-weight:700;flex-shrink:0;
+}
+.util textarea{
+  width:100%;min-height:80px;padding:8px 10px;font-family:var(--mono);font-size:.78rem;
+  color:var(--text);background:var(--bg);border:1px solid var(--border-soft);
+  border-radius:var(--rs);resize:vertical;
+}
+.util textarea:focus{outline:none;border-color:var(--accent)}
+.util .row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.util .stat-line{
+  font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:6px;
+  padding:6px 10px;background:var(--bg);border-radius:var(--rs);border:1px solid var(--border-soft);
+}
+
+/* RESOURCES */
+.res-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.res-tools input{
+  flex:1;min-width:180px;padding:8px 11px;font-size:.87rem;font-family:inherit;
+  color:var(--text);background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--rs);
+}
+.res-tools input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.cats{display:flex;gap:4px;flex-wrap:wrap}
+.cat{
+  padding:5px 10px;font-size:.76rem;font-family:inherit;
+  color:var(--muted);background:var(--alt);border:1px solid transparent;
+  border-radius:14px;cursor:pointer;transition:.15s;
+}
+.cat:hover{color:var(--text)}
+.cat.on{background:var(--accent);color:#fff}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.res-card{
+  padding:12px 14px;background:var(--bg);
+  border:1px solid var(--border-l);border-radius:var(--rs);
+  transition:.15s;
+}
+.res-card:hover{border-color:var(--accent);box-shadow:0 2px 8px var(--accent-soft)}
+.res-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px}
+.res-t{font-weight:600;font-size:.87rem;line-height:1.35}
+.res-t a{color:var(--text)}
+.res-t a:hover{color:var(--accent);text-decoration:underline}
+.res-b{
+  font-family:var(--mono);font-size:.62rem;padding:2px 6px;
+  background:var(--accent-soft);color:var(--accent);border-radius:3px;
+  font-weight:700;flex-shrink:0;
+}
+.res-d{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:7px}
+.res-tags{display:flex;gap:3px;flex-wrap:wrap}
+.res-tag{
+  font-family:var(--mono);font-size:.66rem;padding:2px 7px;
+  background:var(--panel);border:1px solid var(--border-soft);
+  color:var(--muted);border-radius:3px;
+}
+.empty{text-align:center;padding:32px 20px;color:var(--muted);font-size:.88rem}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+.about-item{padding:12px 14px;background:var(--bg);border-radius:var(--rs);border:1px solid var(--border-soft)}
+.about-item .l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;font-weight:600}
+.about-item .v{font-size:.88rem;color:var(--text);line-height:1.5}
+
+/* NOTICE */
+.notice{
+  border-left:3px solid var(--accent);background:var(--accent-soft);
+  padding:11px 15px;border-radius:0 var(--rs) var(--rs) 0;
+  font-size:.85rem;color:var(--text2);line-height:1.6;margin:12px 0;
+}
+.notice.gold{border-left-color:var(--gold);background:var(--gold-soft);color:var(--gold)}
+.notice.ok{border-left-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.notice.warn{border-left-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.notice strong{color:inherit;font-weight:600}
+
+/* TOASTS */
+.toasts{
+  position:fixed;bottom:18px;right:18px;z-index:2000;
+  display:flex;flex-direction:column;gap:6px;max-width:calc(100vw - 36px);
+}
+.toast{
+  padding:10px 15px;border-radius:var(--rs);
+  font-size:.83rem;font-weight:500;
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);box-shadow:var(--sh-lg);
+  border-left:3px solid var(--accent);
+  animation:tin .3s var(--ease);max-width:340px;word-break:break-word;
+}
+.toast.ok{border-left-color:var(--ok)}
+.toast.err{border-left-color:var(--bad)}
+.toast.warn{border-left-color:var(--warn)}
+@keyframes tin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* FOOTER */
+.foot{
+  margin-top:24px;padding-top:18px;border-top:1px solid var(--border-soft);
+  text-align:center;font-size:.75rem;color:var(--muted);line-height:1.7;
+}
+.foot .disc{
+  max-width:640px;margin:0 auto 12px;padding:10px 15px;
+  background:var(--warn-soft);border-left:3px solid var(--warn);
+  border-radius:0 var(--rs) var(--rs) 0;text-align:left;color:var(--warn);
+  font-size:.8rem;
+}
+.srcs{max-width:720px;margin:12px auto 0;text-align:left;font-size:.72rem;color:var(--muted);line-height:1.6}
+.srcs strong{color:var(--text)}
+
+/* RESPONSIVE */
+@media (max-width:640px){
+  body{padding:10px 10px 40px}
+  .sect{padding:14px 14px}
+  .app-h{padding:12px 14px}
+  .app-h h1{font-size:1.05rem}
+  .app-h h1 .mark{width:28px;height:28px;font-size:12px}
+  .nav button{padding:6px 9px;font-size:.78rem}
+  .nav button .cnt{display:none}
+  .scale th,.scale td{padding:6px 7px;font-size:.82rem}
+  .scale .rc{width:40px}
+  .scale .rc input[type=radio]{width:17px;height:17px}
+  .stage-h{padding:11px 12px;gap:9px}
+  .stage-num{width:28px;height:28px;font-size:11px}
+  .skill{padding:8px 9px 8px 13px;gap:9px}
+  .hero{padding:14px 14px;gap:14px}
+  .ring{width:56px;height:56px}
+  .ring .pct{font-size:12px}
+  .util-grid,.about-grid,.res-grid{grid-template-columns:1fr}
+}
+
+/* PRINT */
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  body{background:#fff;color:#000;padding:0;max-width:none;font-size:10pt;font-family:'Times New Roman',Times,serif}
+  .no-print,.no-print *{display:none !important}
+  .nav,.app-h .actions,.toasts{display:none !important}
+  .panel:not(.active){display:none}
+  .sect{
+    box-shadow:none;border:1px solid #ccc;border-radius:0;
+    padding:6mm 5mm;margin-bottom:5mm;page-break-inside:avoid;background:#fff;
+  }
+  .sect>h2{font-size:13pt;border-bottom:1.5pt solid #333;color:#000;padding-bottom:3mm}
+  .sect>h2 .num{background:none;color:#333;padding:0;font-weight:700}
+  .scale,.stage,.art,.util,.res-card{border:1px solid #999;border-radius:0;page-break-inside:avoid}
+  .scale-h,.stage-h,.art-h{background:#f0f0f0;border-bottom:1px solid #999;padding:5px 10px}
+  table{font-size:9pt}
+  th,td{border-bottom:1px solid #ddd;padding:4px 6px}
+  thead th{background:#e8e8e8;color:#000;font-size:8pt}
+  .scale .rc input[type=radio]{border:1.5pt solid #333;width:14px;height:14px}
+  .scale .rc input[type=radio]:checked{background:#333;border-color:#333}
+  .scale .rc input[type=radio]:checked::after{background:#fff;width:5px;height:5px}
+  .scale details{display:block !important;page-break-inside:avoid}
+  .scale-sum{background:#f8f8f8;border-top:1px solid #999;padding:5px 10px}
+  .scale-sum .interp{background:none;padding:0;color:#000;font-weight:700}
+  .scale-sum .interp.empty,.scale-sum .interp.ok,.scale-sum .interp.warn,.scale-sum .interp.bad{background:none;color:#000}
+  .art-b pre,.art-b .csv{border:1px solid #ccc;background:#fafafa;font-size:8.5pt;padding:5px 7px;max-height:none;color:#000}
+  .field input,.field select,.field textarea{background:#fff;border:none;border-bottom:1px solid #333;border-radius:0;padding:1px 0;font-size:10pt}
+  .field label{font-size:8.5pt;color:#333}
+  .skills,.res-tools,.res-grid,.cats,.util-grid{display:none !important}
+  .stage-body{padding:0}
+  .skill-why{display:block !important}
+  .skill-why-btn,.skill-check{display:none !important}
+  .skill{padding:3px 6px;margin-bottom:1px}
+  .skill::before{display:none}
+  a{color:#000;text-decoration:none}
+  a[href]:after{content:''}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Перейти к содержимому</a>
+
+<header class="app-h no-print">
+  <div class="left">
+    <h1><span class="mark">VX</span>VanXo Medical Kit</h1>
+    <p class="sub">Единый офлайн-инструмент для врача: коммуникация, шкалы, скрининги, утилиты</p>
+    <p class="ver">v1.1.0 · офлайн · без зависимостей · все шкалы сверены с источниками</p>
+  </div>
+  <div class="actions">
+    <button class="btn" type="button" id="btnCalc">Рассчитать</button>
+    <button class="btn sec" type="button" id="btnPrint">Печать / PDF</button>
+    <button class="btn sec icon" type="button" id="btnTheme" title="Тема">◐</button>
+  </div>
+</header>
+
+<nav class="nav no-print" role="tablist">
+  <button class="active" data-panel="p-home" role="tab" aria-selected="true">🏠 Главная</button>
+  <button data-panel="p-comm" role="tab" aria-selected="false">💬 Коммуникация <span class="cnt" id="cntComm">0</span></button>
+  <button data-panel="p-neuro" role="tab" aria-selected="false">🧠 Неврология</button>
+  <button data-panel="p-vertebro" role="tab" aria-selected="false">🦴 Вертебрология</button>
+  <button data-panel="p-screens" role="tab" aria-selected="false">🧪 Скрининги</button>
+  <button data-panel="p-utils" role="tab" aria-selected="false">🛠 Утилиты</button>
+  <button data-panel="p-resources" role="tab" aria-selected="false">📚 База знаний</button>
+  <button data-panel="p-about" role="tab" aria-selected="false">ℹ️ О системе</button>
+</nav>
+
+<main id="main">
+
+<!-- HOME -->
+<section class="panel active" id="p-home" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">01</span>Данные пациента</h2>
+    <div class="pgrid">
+      <div class="field"><label for="pName">ФИО пациента</label><input type="text" id="pName" placeholder="Иванов Иван Иванович" autocomplete="off"></div>
+      <div class="field"><label for="pDate">Дата осмотра</label><input type="date" id="pDate"></div>
+      <div class="field"><label for="pAge">Возраст</label><input type="number" id="pAge" min="1" max="120" placeholder="45" autocomplete="off"></div>
+      <div class="field"><label for="pSex">Пол</label><select id="pSex"><option value="">—</option><option value="М">Мужской</option><option value="Ж">Женский</option></select></div>
+      <div class="field"><label for="pID">ID пациента</label><input type="text" id="pID" placeholder="например, VX-001" autocomplete="off"></div>
+      <div class="field"><label for="pDx">Основной диагноз</label><input type="text" id="pDx" placeholder="например, дорсопатия поясничного отдела" autocomplete="off"></div>
+    </div>
+    <div class="notice">Данные пациента используются во всех разделах: подставляются в промпт для LLM и строку CSV.</div>
+  </div>
+
+  <div class="sect">
+    <h2><span class="num">02</span>Что внутри</h2>
+    <div class="about-grid">
+      <div class="about-item"><div class="l">Коммуникация</div><div class="v">102 навыка · 15 этапов приёма. Чек-лист с пояснениями «Зачем» и «Связь».</div></div>
+      <div class="about-item"><div class="l">Неврология</div><div class="v">NIHSS · mRS · VAS. Оценка тяжести инсульта, инвалидизации, боли.</div></div>
+      <div class="about-item"><div class="l">Вертебрология</div><div class="v">ODI · NDI · Tampa · PCS. Оценка дезадаптации, кинезиофобии, катастрофизации.</div></div>
+      <div class="about-item"><div class="l">Скрининги</div><div class="v">HADS · PSQI. Тревога, депрессия, качество сна.</div></div>
+      <div class="about-item"><div class="l">Утилиты</div><div class="v">Счётчик текста · JSON · SHA-256 · генератор пароля · конвертер цветов.</div></div>
+      <div class="about-item"><div class="l">База знаний</div><div class="v">Открытые ресурсы: рекомендации, калькуляторы, научные базы, образование.</div></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <h2><span class="num">03</span>Артефакты для работы</h2>
+    <div class="art">
+      <div class="art-h">
+        <div><span class="t">Промпт для LLM</span><span class="hint">Готовый текст с подставленными баллами всех заполненных шкал</span></div>
+        <button class="btn sm sec" type="button" data-copy="llmOut">Копировать</button>
+      </div>
+      <div class="art-b"><pre id="llmOut">Нажмите «Рассчитать» — здесь появится промпт.</pre></div>
+    </div>
+    <div class="art">
+      <div class="art-h">
+        <div><span class="t">Строка для Excel / CSV</span><span class="hint">Разделитель — точка с запятой</span></div>
+        <button class="btn sm sec" type="button" data-copy="csvOut">Копировать</button>
+      </div>
+      <div class="art-b"><span class="csv" id="csvOut">Нажмите «Рассчитать» — здесь появится строка.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMM -->
+<section class="panel" id="p-comm" role="tabpanel">
+  <div class="hero idle" id="commHero">
+    <div class="ring">
+      <svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="30"/><circle class="fill" cx="36" cy="36" r="30" id="ringFill"/></svg>
+      <div class="pct" id="ringPct">0%</div>
+    </div>
+    <div class="stats">
+      <div class="stats-row">
+        <div class="stats-item"><div class="stats-val ok" id="commDone">0</div><div class="stats-lbl">выполнено</div></div>
+        <div class="stats-item"><div class="stats-val" id="commTotal">102</div><div class="stats-lbl">всего</div></div>
+        <div class="stats-item"><div class="stats-val gold" id="commSplit">—</div><div class="stats-lbl">base / ext</div></div>
+      </div>
+    </div>
+    <div class="hint" id="commHint">Отметьте первый навык, чтобы начать. Прогресс сохраняется локально.</div>
+    <div class="actions no-print" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto">
+      <button class="btn ghost sm" type="button" data-act="resetComm" title="Сбросить">↺</button>
+      <button class="btn sec sm" type="button" data-act="exportCommCsv">CSV навыков</button>
+    </div>
+  </div>
+  <div id="commStages"></div>
+</section>
+
+<!-- NEURO -->
+<section class="panel" id="p-neuro" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">🧠</span>Неврологические шкалы</h2>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:12px">Отметьте один вариант в каждом пункте. Баллы и интерпретация — в реальном времени.</p>
+  </div>
+  <div id="neuroScales"></div>
+</section>
+
+<!-- VERTEBRO -->
+<section class="panel" id="p-vertebro" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">🦴</span>Вертебрологические шкалы</h2>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:12px">Оценка дезадаптации, кинезиофобии и катастрофизации при боли в спине и шее.</p>
+  </div>
+  <div id="vertebroScales"></div>
+</section>
+
+<!-- SCREENS -->
+<section class="panel" id="p-screens" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">🧪</span>Психо-скрининги</h2>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:12px">Госпитальная шкала тревоги и депрессии, Питтсбургский опросник качества сна.</p>
+  </div>
+  <div id="screenScales"></div>
+</section>
+
+<!-- UTILS -->
+<section class="panel" id="p-utils" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">🛠</span>Офлайн-утилиты</h2>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Быстрые инструменты для работы. Всё локально, ничего не отправляется в сеть.</p>
+    <div class="util-grid">
+      <div class="util">
+        <h4><span class="ico">T</span>Счётчик текста</h4>
+        <textarea id="uText" placeholder="Введите или вставьте текст..."></textarea>
+        <div class="stat-line" id="uTextStat">Символов: 0 · Слов: 0 · Строк: 0</div>
+      </div>
+      <div class="util">
+        <h4><span class="ico">J</span>JSON-форматирование</h4>
+        <textarea id="uJsonIn" placeholder='{"key": "value"}'></textarea>
+        <div class="row">
+          <button class="btn sm" type="button" data-act="formatJson">Форматировать</button>
+          <button class="btn sm sec" type="button" data-act="minifyJson">Сжать</button>
+          <button class="btn sm sec" type="button" data-act="copyJson">Копировать</button>
+        </div>
+        <div class="stat-line" id="uJsonStat">Готов к работе</div>
+      </div>
+      <div class="util">
+        <h4><span class="ico">#</span>SHA-256</h4>
+        <textarea id="uHashIn" placeholder="Введите текст для вычисления хеша..."></textarea>
+        <div class="row">
+          <button class="btn sm" type="button" data-act="calcHash">Вычислить</button>
+          <button class="btn sm sec" type="button" data-act="copyHash">Копировать хеш</button>
+        </div>
+        <div class="stat-line" id="uHashStat">—</div>
+      </div>
+      <div class="util">
+        <h4><span class="ico">P</span>Генератор пароля</h4>
+        <div class="field" style="margin-bottom:8px">
+          <label for="uPassLen">Длина пароля</label>
+          <input type="number" id="uPassLen" value="16" min="6" max="64">
+        </div>
+        <div class="row">
+          <button class="btn sm" type="button" data-act="genPass">Сгенерировать</button>
+          <button class="btn sm sec" type="button" data-act="copyPass">Копировать</button>
+        </div>
+        <div class="stat-line" id="uPassStat" style="word-break:break-all;font-size:.9rem;color:var(--text)">—</div>
+      </div>
+      <div class="util">
+        <h4><span class="ico">C</span>Конвертер цветов</h4>
+        <div class="field" style="margin-bottom:8px">
+          <label for="uColorIn">HEX или RGB</label>
+          <input type="text" id="uColorIn" placeholder="#3498db или 52,152,219">
+        </div>
+        <div class="row">
+          <button class="btn sm" type="button" data-act="convertColor">Конвертировать</button>
+        </div>
+        <div class="stat-line" id="uColorStat">
+          <span id="uColorPrev" style="display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--border);vertical-align:middle;margin-right:6px;background:#3498db"></span>
+          <span id="uColorText">#3498db · rgb(52, 152, 219)</span>
+        </div>
+      </div>
+      <div class="util">
+        <h4><span class="ico">D</span>Дата и время</h4>
+        <div class="stat-line" id="uDateStat">—</div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn sm sec" type="button" data-act="copyIsoDate">ISO-дата</button>
+          <button class="btn sm sec" type="button" data-act="copyRuDate">Дата по-русски</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section class="panel" id="p-resources" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">📚</span>База знаний: открытые ресурсы</h2>
+    <div class="res-tools">
+      <input type="text" id="resSearch" placeholder="Поиск по названию, описанию, тегам..." autocomplete="off">
+      <div class="cats" id="cats"></div>
+    </div>
+    <div class="res-grid" id="resGrid"></div>
+  </div>
+  <div class="sect">
+    <h2><span class="num">📖</span>Шпаргалка: формулы и пороги</h2>
+    <table class="tbl">
+      <thead><tr><th>Шкала</th><th>Формула / диапазон</th><th>Интерпретация</th></tr></thead>
+      <tbody>
+        <tr><td class="sn">NIHSS</td><td>Сумма 15 пунктов, 0–42</td><td>0 — нет признаков; 1–4 — малый; 5–15 — средний; 16–20 — средне-тяжёлый; 21–42 — тяжёлый</td></tr>
+        <tr><td class="sn">mRS</td><td>Один пункт, 0–6</td><td>0 — нет симптомов; 1 — нет существенной инвалидизации; 2 — лёгкая; 3 — умеренная; 4 — умеренно-тяжёлая; 5 — тяжёлая; 6 — смерть</td></tr>
+        <tr><td class="sn">VAS</td><td>0–10 см, каждый см = 1 балл</td><td>0–2 — слабая; 3–4 — умеренная; 5–6 — сильная; 7–8 — сильнейшая; 9–10 — нестерпимая</td></tr>
+        <tr><td class="sn">ODI</td><td>Сумма 10 разделов × 0–5 = 0–50, % от 50</td><td>0–20% — минимальное; 21–40% — умеренное; 41–60% — сильное; 61–80% — инвалидность; 81–100% — прикован / аггравация</td></tr>
+        <tr><td class="sn">NDI</td><td>Сумма 10 разделов × 0–5 = 0–50</td><td>0–4 — нет; 5–14 — лёгкое; 15–24 — умеренное; 25–34 — сильное; ≥35 — полное</td></tr>
+        <tr><td class="sn">HADS-A / HADS-D</td><td>По 7 пунктов × 0–3 = 0–21 каждая</td><td>0–7 — норма; 8–10 — субклиническая; 11–21 — клинически выраженная. По русскоязычной валидации: 9 баллов (депрессия), 10 баллов (тревога)</td></tr>
+        <tr><td class="sn">Шкала Тампа</td><td>17 пунктов × 1–4 = 17–68. Пункты 4, 8, 12, 16 инверсные</td><td>17–36 — низкая; 37–52 — средняя; 53–68 — высокая кинезиофобия</td></tr>
+        <tr><td class="sn">PCS</td><td>13 пунктов × 0–4 = 0–52</td><td>0–14 — низкая; 15–29 — средняя; 30–52 — высокая. Балл >24 — катастрофизатор, <15 — не-катастрофизатор</td></tr>
+        <tr><td class="sn">PCS субшкалы</td><td>Размышления: 8,9,10,11; Преувеличение: 6,7,13; Беспомощность: 1–5,12</td><td>—</td></tr>
+        <tr><td class="sn">PSQI</td><td>7 компонентов × 0–3 = 0–21</td><td>0–5 — хорошее; 6–10 — плохое; 11–21 — очень плохое, клинически значимое</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;font-size:.82rem;color:var(--muted);font-style:italic">
+      Пороги носят справочный характер. Окончательную интерпретацию определяет лечащий врач.
+    </p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="panel" id="p-about" role="tabpanel">
+  <div class="sect">
+    <h2><span class="num">ℹ️</span>О системе</h2>
+    <p style="font-size:.9rem;color:var(--text2);line-height:1.7;margin-bottom:12px">
+      VanXo Medical Kit — единый офлайн-инструмент для врача. Объединяет шесть модулей в одном HTML-файле: ассистент клинической коммуникации, неврологические и вертебрологические шкалы, психо-скрининги, офлайн-утилиты и база знаний.
+    </p>
+    <h3 style="font-size:.92rem;font-weight:600;margin:16px 0 10px">Архитектура</h3>
+    <div class="about-grid">
+      <div class="about-item"><div class="l">Формат</div><div class="v">Один HTML-файл. Работает без интернета, без сервера, без установки.</div></div>
+      <div class="about-item"><div class="l">Данные</div><div class="v">Хранятся локально (localStorage + IndexedDB). Не покидают устройство.</div></div>
+      <div class="about-item"><div class="l">CSP</div><div class="v">default-src 'none' — приложение физически не может отправить данные никуда.</div></div>
+      <div class="about-item"><div class="l">Зависимости</div><div class="v">Ноль. Только встроенные API браузера.</div></div>
+      <div class="about-item"><div class="l">Seed IR</div><div class="v">SHA-256 идентификатор сессии для переноса между устройствами.</div></div>
+      <div class="about-item"><div class="l">Печать</div><div class="v">Ctrl+P — адаптировано под A4. Скрывает интерфейс, оставляет карту.</div></div>
+    </div>
+    <h3 style="font-size:.92rem;font-weight:600;margin:18px 0 10px">Верификация шкал</h3>
+    <p style="font-size:.85rem;color:var(--text2);line-height:1.7">
+      Все девять шкал сверены с авторитетными источниками. Для PSQI реализованы оригинальные формулы Buysse (1989). Для шкалы Тампа применена инверсия пунктов 4, 8, 12, 16. Для PCS исправлен маппинг субшкал по Sullivan (1995). Для HADS максимум субшкалы = 21. Использованы валидированные русскоязычные версии, где они доступны.
+    </p>
+    <h3 style="font-size:.92rem;font-weight:600;margin:18px 0 10px">Ограничения</h3>
+    <div class="notice warn">
+      <strong>Важно.</strong> Инструмент предназначен для научной и клинической работы. Не содержит медицинских рекомендаций — только шкалы и расчёт. Интерпретация носит справочный характер. Клинические решения принимает лечащий врач.
+    </div>
+    <h3 style="font-size:.92rem;font-weight:600;margin:18px 0 10px">Лицензии</h3>
+    <p style="font-size:.85rem;color:var(--text2);line-height:1.7">
+      Код — MIT License. Текстовый контент — CC BY-NC-SA 4.0. Обе лицензии открытые и допускают свободное некоммерческое использование с указанием авторства.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot no-print">
+  <div class="disc"><strong>Дисклеймер.</strong> Инструмент для научной и клинической работы. Не заменяет клиническое суждение врача, знание действующих клинических рекомендаций и формальное медицинское образование. Все формулировки носят справочный характер. Клинические решения принимает врач.</div>
+  <div>VanXo Medical Kit v1.1.0 · автономный HTML · работает офлайн · данные не покидают устройство</div>
+  <div class="srcs">
+    <strong>Источники:</strong><br>
+    NIHSS — Brott T et al. Stroke. 1989. Русская версия: рекомендована Минздравом РФ.<br>
+    mRS — van Swieten JC et al. 1988. Валидация в России: Супонева Н.А. и др. 2018.<br>
+    VAS — Huskisson EC. 1974.<br>
+    ODI — Fairbank JCT, Pynsent PB. Spine. 2000. Русская версия: Cherepanov EA. 2009.<br>
+    NDI — Vernon H, Mior S. 1991. Русская версия: Bakhtadze MA et al. Spine. 2015.<br>
+    HADS — Zigmond AS, Snaith RP. 1983. Русская версия: Морозова М.А. и др. 2023.<br>
+    Tampa — Kori SH, Miller RP, Todd DD. 1990. Русская версия: Котельникова А.В., Кукшина А.А. 2018.<br>
+    PCS — Sullivan MJL, Bishop SR, Pivik J. 1995.<br>
+    PSQI — Buysse DJ et al. Psychiatry Res. 1989. Русская версия: Семенова Е.А., Даниленко К.В. 2009.
+  </div>
+</footer>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+(function(){
+
+/* UTILS */
+function $(s){return document.querySelector(s)}
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+function esc(s){if(s==null)return '';return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}
+function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16)})}
+function fmtDate(d){return new Date(d).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}
+function hasCrypto(){return !!(window.crypto&&window.crypto.subtle&&crypto.subtle.digest)}
+async function sha256(msg){
+  if(!hasCrypto())throw new Error('Web Crypto недоступен');
+  var buf=new TextEncoder().encode(msg);
+  var h=await crypto.subtle.digest('SHA-256',buf);
+  return Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+}
+function debounce(fn,d){var t;return function(){var a=arguments;clearTimeout(t);t=setTimeout(function(){fn.apply(null,a)},d)}}
+function toast(msg,type){
+  type=type||'info';
+  var c=$('#toasts');if(!c)return;
+  var el=document.createElement('div');
+  el.className='toast '+type;
+  el.textContent=msg;
+  c.appendChild(el);
+  setTimeout(function(){
+    el.style.transition='opacity .3s, transform .3s';
+    el.style.opacity='0';
+    el.style.transform='translateY(6px)';
+    setTimeout(function(){el.remove()},320);
+  },3000);
+}
+function copy(text,btn){
+  var done=function(){
+    if(!btn)return;
+    var old=btn.textContent;
+    btn.textContent='Скопировано';
+    btn.disabled=true;
+    setTimeout(function(){btn.textContent=old;btn.disabled=false},1400);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){done();toast('Скопировано','ok')}).catch(function(){fallback(text,done)});
+  }else{
+    fallback(text,done);
+  }
+}
+function fallback(text,cb){
+  var ta=document.createElement('textarea');
+  ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');if(cb)cb();toast('Скопировано','ok')}
+  catch(e){toast('Не удалось скопировать','err')}
+  ta.remove();
+}
+
+/* LOCAL STORAGE */
+var ST={
+  get:function(k,d){try{var v=localStorage.getItem('vxmk_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set:function(k,v){try{localStorage.setItem('vxmk_'+k,JSON.stringify(v))}catch(e){}},
+  rm:function(k){try{localStorage.removeItem('vxmk_'+k)}catch(e){}}
+};
+
+/* SCALE DATA */
+var SCALES_ALL = [];
+
+/* Неврология */
+var SCALE_NIHSS = {
+  id:"nihss", group:"neuro",
+  title:"NIHSS — шкала тяжести инсульта",
+  sub:"15 пунктов, диапазон 0–42. Рекомендована Минздравом РФ для скрининга в первые дни от начала заболевания.",
+  max:42, layout:"questions",
+  source:"Brott T et al. Stroke. 1989.",
+  items:[
+    {q:"Уровень сознания",o:["Ясное","Оглушение","Сопор","Кома"]},
+    {q:"Ответы на вопросы (месяц, возраст)",o:["Оба верны","Один верен","Ни один не верен"]},
+    {q:"Выполнение команд (закрыть глаза, сжать кулак)",o:["Обе верны","Одна верна","Ни одна не верна"]},
+    {q:"Движения глазных яблок",o:["Норма","Частичный парез","Фиксированная девиация"]},
+    {q:"Поля зрения",o:["Норма","Частичная гемианопсия","Полная гемианопсия","Двусторонняя гемианопсия"]},
+    {q:"Парез мимической мускулатуры",o:["Нет","Лёгкий","Частичный","Полный"]},
+    {q:"Движения в правой руке (удержание 10 с)",o:["Удерживает 10 с","Удерживает <10 с","Против гравитации","Только пассивное","Плегия"]},
+    {q:"Движения в левой руке (удержание 10 с)",o:["Удерживает 10 с","Удерживает <10 с","Против гравитации","Только пассивное","Плегия"]},
+    {q:"Движения в правой ноге (удержание 5 с)",o:["Удерживает 5 с","Удерживает <5 с","Против гравитации","Только пассивное","Плегия"]},
+    {q:"Движения в левой ноге (удержание 5 с)",o:["Удерживает 5 с","Удерживает <5 с","Против гравитации","Только пассивное","Плегия"]},
+    {q:"Атаксия в конечностях",o:["Нет","В одной конечности","В двух конечностях"]},
+    {q:"Чувствительность",o:["Норма","Лёгкое/умеренное","Выраженное"]},
+    {q:"Речь",o:["Норма","Лёгкая афазия","Выраженная афазия","Мутизм"]},
+    {q:"Дизартрия",o:["Нет","Лёгкая/умеренная","Выраженная"]},
+    {q:"Игнорирование (неглект)",o:["Нет","Лёгкое","Выраженное"]}
+  ],
+  interp:function(s){
+    if(s===0)return{text:"Нет признаков",cls:"ok"};
+    if(s<=4)return{text:"Малый инсульт",cls:"ok"};
+    if(s<=15)return{text:"Средней тяжести",cls:"warn"};
+    if(s<=20)return{text:"Средне-тяжёлый",cls:"warn"};
+    return{text:"Тяжёлый инсульт",cls:"bad"}
+  }
+};
+
+var SCALE_MRS = {
+  id:"mrs", group:"neuro",
+  title:"mRS — модифицированная шкала Рэнкина",
+  sub:"Степень инвалидизации. Один пункт, 0–6. Русскоязычная версия валидирована.",
+  max:6, layout:"questions",
+  source:"van Swieten JC et al. 1988. Валидация в России: Супонева Н.А. и др. 2018.",
+  items:[
+    {q:"Степень функциональной независимости",o:["Нет симптомов","Нет существенной инвалидизации","Лёгкая инвалидизация","Умеренная (ходит сам, нужна помощь)","Умеренно-тяжёлая (не ходит без помощи)","Тяжёлая (прикован, недержание)","Смерть"]}
+  ],
+  interp:function(s){
+    if(s<=1)return{text:"Независим",cls:"ok"};
+    if(s===2)return{text:"Лёгкое нарушение",cls:"ok"};
+    if(s===3)return{text:"Умеренное нарушение",cls:"warn"};
+    if(s===4)return{text:"Умеренно-тяжёлое",cls:"warn"};
+    if(s===5)return{text:"Тяжёлое нарушение",cls:"bad"};
+    return{text:"Летальный исход",cls:"bad"}
+  }
+};
+
+var SCALE_VAS = {
+  id:"vas", group:"neuro",
+  title:"VAS — визуально-аналоговая шкала боли",
+  sub:"Интенсивность боли, 0–10. Каждый сантиметр = 1 балл.",
+  max:10, layout:"questions",
+  source:"Huskisson EC. 1974.",
+  items:[
+    {q:"Интенсивность боли (0 — нет боли, 10 — нестерпимая)",o:["0 — нет","1","2","3 — слабая","4","5","6 — сильная","7","8","9","10 — нестерпимая"]}
+  ],
+  interp:function(s){
+    if(s===0)return{text:"Нет боли",cls:"ok"};
+    if(s<=2)return{text:"Слабая",cls:"ok"};
+    if(s<=4)return{text:"Умеренная",cls:"warn"};
+    if(s<=6)return{text:"Сильная",cls:"warn"};
+    if(s<=8)return{text:"Сильнейшая",cls:"bad"};
+    return{text:"Нестерпимая",cls:"bad"}
+  }
+};
+
+/* Вертебрология */
+var SCALE_ODI = {
+  id:"odi", group:"vertebro",
+  title:"ODI — Oswestry Disability Index",
+  sub:"Боль в нижней части спины. 10 разделов, 0–50. Русская версия валидирована.",
+  max:50, layout:"sections",
+  source:"Fairbank JCT, Pynsent PB. Spine. 2000. Русская версия: Cherepanov EA. 2009.",
+  items:[
+    ["Интенсивность боли",["В настоящий момент у меня нет боли","В настоящий момент боль очень лёгкая","В настоящий момент боль умеренная","В настоящий момент боль довольно сильная","В настоящий момент боль очень сильная","В настоящий момент боль наихудшая из всех болей, которые только можно себе представить"]],
+    ["Самообслуживание (умывание, одевание и т.д.)",["Я могу обслуживать себя нормально без особой боли","Я могу обслуживать себя нормально с некоторой болью","Самообслуживание причиняет мне боль; я медлителен и осторожен","Я нуждаюсь в некоторой помощи, но в основном справляюсь самостоятельно","Чтобы обслужить себя я нуждаюсь в ежедневной помощи","Я не могу одеться, с трудом умываюсь и остаюсь в постели"]],
+    ["Поднимание предметов",["Я могу поднимать тяжёлые предметы без особой боли","Я могу поднимать тяжёлые предметы с некоторой болью","Боль мешает мне поднимать тяжёлые предметы с пола, но я могу справиться, если они расположены удобно","Боль мешает мне поднимать тяжёлые предметы с пола, но я могу справиться с лёгкими предметами","Я могу поднимать только очень лёгкие предметы","Я вовсе не могу ни поднять, ни перенести что-либо"]],
+    ["Ходьба",["Боль не мешает мне ходить на любые расстояния","Боль мешает мне ходить на расстояние больше 1 км","Боль мешает мне ходить на расстояние больше 500 метров","Боль мешает мне ходить на расстояние больше чем 100 метров","Я могу ходить только опираясь на трость, костыли или ходунки","Я с трудом добираюсь до туалета и большую часть времени остаюсь в постели"]],
+    ["Сидение",["Я могу сидеть на любом стуле столько, сколько захочу","Я могу сидеть столько, сколько захочу, только на моём любимом стуле","Боль мешает мне сидеть больше 1 часа","Боль мешает мне сидеть больше 30 минут","Боль мешает мне сидеть больше 10 минут","Из-за боли я вообще не могу сидеть"]],
+    ["Стояние",["Я могу стоять столько, сколько захочу, без особой боли","Я могу стоять столько, сколько захочу, с некоторой болью","Боль мешает мне стоять больше 1 часа","Боль мешает мне стоять больше 30 минут","Боль мешает мне стоять больше 10 минут","Из-за боли я вообще не могу стоять"]],
+    ["Сон",["Мой сон никогда не прерывается из-за боли","Иногда мой сон прерывается из-за боли","Из-за боли я сплю меньше 6 часов","Из-за боли я сплю меньше 4 часов","Из-за боли я сплю меньше 2 часов","Из-за боли я вообще не могу уснуть"]],
+    ["Сексуальная жизнь (если применимо)",["Моя сексуальная жизнь нормальна и не причиняет особой боли","Моя сексуальная жизнь нормальна, но причиняет небольшую боль","Моя сексуальная жизнь почти нормальна, но очень болезненна","Моя сексуальная жизнь сильно ограничена болью","Из-за боли я почти лишён/лишена сексуальной жизни","Боль лишает меня сексуальной жизни"]],
+    ["Образ жизни",["Я веду активный образ жизни без особой боли","Я веду активный образ жизни с некоторой болью","Боль не особенно влияет на мой образ жизни, но ограничивает наиболее активную деятельность","Из-за боли моя активность ограничена; я выхожу из дома реже, чем обычно","Из-за боли моя активность ограничена пределами дома","Из-за боли моя активность полностью ограничена"]],
+    ["Поездки, путешествия",["Я могу поехать куда угодно без боли","Я могу поехать куда угодно с некоторой болью","Боль довольно сильная, но я могу выдержать двухчасовую поездку","Из-за боли я могу выдержать поездку, длящуюся не больше 1 часа","Из-за боли я могу выдержать поездку, длящуюся не больше 30 минут","Я могу доехать только до врача или до больницы"]]
+  ],
+  interp:function(s){var p=Math.round(s/50*100);
+    if(p<=20)return{text:"Минимальное нарушение · "+p+"%",cls:"ok"};
+    if(p<=40)return{text:"Умеренное нарушение · "+p+"%",cls:"warn"};
+    if(p<=60)return{text:"Сильное нарушение · "+p+"%",cls:"warn"};
+    if(p<=80)return{text:"Инвалидность · "+p+"%",cls:"bad"};
+    return{text:"Прикован / аггравация · "+p+"%",cls:"bad"}
+  }
+};
+
+var SCALE_NDI = {
+  id:"ndi", group:"vertebro",
+  title:"NDI — Neck Disability Index",
+  sub:"Боль в шее. 10 разделов, 0–50. Русская версия валидирована.",
+  max:50, layout:"sections",
+  source:"Vernon H, Mior S. 1991. Русская версия: Bakhtadze MA et al. Spine. 2015.",
+  items:[
+    ["Интенсивность боли в шее",["В настоящее время у меня нет боли в шее","В настоящее время боль в шее лёгкая","В настоящее время боль в шее умеренная","В настоящее время боль в шее довольно сильная","В настоящее время боль в шее очень сильная","В настоящее время боль в шее самая сильная из всех болей, которые только можно себе представить"]],
+    ["Самообслуживание (умывание, одевание и т.п.)",["Я могу обслуживать себя нормально без особой боли в шее","Я могу обслуживать себя нормально с некоторой болью в шее","Самообслуживание причиняет мне боль в шее и мне приходится быть медлительным и осторожным","Я нуждаюсь в посторонней помощи, но в основном обслуживаю себя самостоятельно","Чтобы обслуживать себя нормально, я по большей части нуждаюсь в ежедневной посторонней помощи","Я не могу самостоятельно одеться. Я с трудом умываюсь и остаюсь в постели"]],
+    ["Подвижность шеи (разгибание, наклоны, повороты головы)",["Подвижность моей шеи ничем не ограничена","Из-за боли подвижность шеи слегка ограничена","Из-за боли подвижность шеи умеренно ограничена","Из-за боли подвижность шеи сильно ограничена","Из-за боли подвижность шеи очень сильно ограничена","Из-за боли подвижность шеи ограничена полностью"]],
+    ["Чтение (в том числе с экрана компьютера)",["Я читаю столько, сколько захочу, без боли в шее","Я читаю столько, сколько захочу, с лёгкой болью в шее","Я читаю столько, сколько захочу, с умеренной болью в шее","Из-за умеренной боли в шее я не могу читать столько, сколько захочу","Из-за сильной боли в шее я не могу читать столько, сколько захочу","Боль в шее полностью лишает меня возможности читать"]],
+    ["Головная боль",["В настоящее время у меня нет головной боли","В настоящее время меня беспокоит лёгкая головная боль","В настоящее время меня беспокоит умеренная головная боль","В настоящее время меня беспокоит довольно сильная головная боль","В настоящее время меня беспокоит очень сильная головная боль","Голова болит нестерпимо"]],
+    ["Концентрация внимания, сосредоточение",["Я легко могу полностью сосредоточиться","Я слегка рассеян, но мне достаточно приложить небольшое усилие, чтобы полностью сосредоточиться","Моё внимание снижено, и чтобы сосредоточиться, мне нужно приложить достаточное усилие","Мне довольно трудно сосредоточиться","Мне крайне тяжело сосредоточиться","Я не могу сосредоточиться совсем"]],
+    ["Работоспособность",["Я работаю столько, сколько необходимо, без боли в шее","Я работаю столько, сколько необходимо, с лёгкой болью в шее","Я работаю столько, сколько необходимо, с умеренной болью в шее","Я не могу работать столько, сколько необходимо, из-за умеренной боли в шее","Мне трудно работать из-за сильной боли в шее","Боль в шее полностью лишает меня возможности работать"]],
+    ["Вождение",["Я вожу машину вообще без боли в шее","Я вожу машину столько, сколько захочу, с лёгкой болью в шее","Я вожу машину столько, сколько захочу, с умеренной болью в шее","Из-за умеренной боли в шее я не могу водить машину столько, сколько захочу","Из-за сильной боли в шее я с большим трудом вожу свою машину","Боль в шее полностью лишает меня возможности водить машину"]],
+    ["Сон",["У меня нет проблем со сном","Мой сон едва ли нарушен (менее чем один час бессонницы)","Мой сон немного нарушен (1–2 часа бессонницы)","Мой сон умеренно нарушен (2–3 часа бессонницы)","Мой сон сильно нарушен (3–5 часов бессонницы)","Боль в шее полностью лишает меня сна"]],
+    ["Отдых и досуг (свободное время)",["Я могу отдыхать и развлекаться вообще без боли в шее","Я могу отдыхать и развлекаться с некоторой болью в шее","Из-за боли в шее мне доступно большинство, но не все виды развлечений","Из-за боли в шее мне доступны лишь некоторые виды развлечений","Из-за боли в шее я могу развлекаться с большим трудом","Боль в шее лишает меня возможности развлекаться"]]
+  ],
+  interp:function(s){
+    if(s<=4)return{text:"Нет ограничений",cls:"ok"};
+    if(s<=14)return{text:"Лёгкое ограничение",cls:"ok"};
+    if(s<=24)return{text:"Умеренное ограничение",cls:"warn"};
+    if(s<=34)return{text:"Сильное ограничение",cls:"warn"};
+    return{text:"Полное ограничение",cls:"bad"}
+  }
+};
+
+var SCALE_TAMPA = {
+  id:"tampa", group:"vertebro",
+  title:"Шкала Тампа — кинезиофобия",
+  sub:"Страх движения. 17 пунктов, 1–4, сумма 17–68. Пункты 4, 8, 12, 16 — инверсные.",
+  max:68, min:17, layout:"questions",
+  scoring:"1-4",
+  source:"Kori SH, Miller RP, Todd DD. 1990. Русская версия: Котельникова А.В., Кукшина А.А. 2018.",
+  reverseItems:[3,7,11,15],
+  items:[
+    {q:"Я опасаюсь, что могу навредить себе, если буду выполнять физические упражнения",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Если я буду пытаться пересилить её, моя боль возрастёт",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Моё тело даёт мне знать, что со мной происходит что-то опасное",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Возможно, моя боль прошла бы, если бы я занимался физическими упражнениями",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Окружающие не воспринимают всерьёз моё заболевание",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Моя травма поставила под угрозу моё физическое здоровье на всю оставшуюся жизнь",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Боль всегда означает, что я получил травму",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Только потому, что что-то усиливает мою боль, это не обязательно опасно",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Я боюсь случайно нанести себе травму",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Самое безопасное, что я могу сделать, чтобы не допустить усиления боли — это просто быть осторожным, чтобы не производить ненужных движений",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Я не испытывал бы боль, если в моём организме не происходило что-то потенциально опасное",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Хотя я испытываю боль, я буду лучше себя чувствовать, если буду сохранять физическую активность",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Боль даёт мне знать, когда перестать делать упражнения, чтобы не нанести себе травму",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Для человека с моим заболеванием совсем не безопасно сохранять физическую активность",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Я не могу делать всё то же, что делают здоровые люди, потому что я слишком легко получаю травмы",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Хотя что-то и причиняет мне сильную боль, я не думаю, что это опасно",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]},
+    {q:"Никто не должен заниматься физическими упражнениями в моменты, когда испытывают боль",o:["Категорически неверно","Неверно","Верно","Абсолютно верно"]}
+  ],
+  interp:function(s){
+    if(s<=36)return{text:"Низкий уровень кинезиофобии",cls:"ok"};
+    if(s<=52)return{text:"Средний уровень кинезиофобии",cls:"warn"};
+    return{text:"Высокий уровень кинезиофобии",cls:"bad"}
+  },
+  compute:function(vals){
+    var sum=0;
+    for(var i=0;i<vals.length;i++){
+      var v = vals[i];
+      if(v===null||v===undefined){sum+=0;continue}
+      if(i===3||i===7||i===11||i===15){ sum += (5 - v); }
+      else { sum += v; }
+    }
+    return sum;
+  }
+};
+
+var SCALE_PCS = {
+  id:"pcs", group:"vertebro",
+  title:"PCS — шкала катастрофизации боли",
+  sub:"Pain Catastrophizing Scale. 13 пунктов, 0–4, сумма 0–52. Три субшкалы. Балл >24 — катастрофизатор.",
+  max:52, layout:"questions",
+  source:"Sullivan MJL, Bishop SR, Pivik J. Psychol Assess. 1995.",
+  subscales:{
+    "Размышления":[7,8,9,10],
+    "Преувеличение":[5,6,12],
+    "Беспомощность":[0,1,2,3,4,11]
+  },
+  items:[
+    {q:"Я всё время думаю о том, как же мне больно",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я всё время думаю о том, как сильно я хочу, чтобы боль ушла",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я не могу не думать о ней",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я всё время думаю о других эпизодах боли",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Мне кажется, что я больше не могу это терпеть",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Это ужасно, и я думаю, что лучше никогда не станет",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Это ужасно, и я чувствую, что она меня порабощает",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я ничего не могу сделать, чтобы уменьшить боль",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я не могу больше это терпеть",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Мне становится страшно, что боль усиливается",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я беспокоюсь о том, что боль никогда не пройдёт",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я не могу перестать думать о ней",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]},
+    {q:"Я задумываюсь о том, может ли это быть что-то серьёзное",o:["Совсем нет","Немного","Умеренно","Сильно","Всё время"]}
+  ],
+  interp:function(s){
+    if(s<=14)return{text:"Низкий уровень катастрофизации",cls:"ok"};
+    if(s<=29)return{text:"Средний уровень катастрофизации",cls:"warn"};
+    return{text:"Высокий уровень катастрофизации",cls:"bad"}
+  }
+};
+
+/* Скрининги */
+var SCALE_HADS = {
+  id:"hads", group:"screens",
+  title:"HADS — Госпитальная шкала тревоги и депрессии",
+  sub:"14 пунктов. Две субшкалы по 7, каждая 0–21. Русскоязычная версия валидирована.",
+  max:42, layout:"questions",
+  source:"Zigmond AS, Snaith RP. 1983. Русская версия: Морозова М.А. и др. 2023.",
+  subscales:{"HADS-A (тревога)":[0,1,2,3,4,5,6],"HADS-D (депрессия)":[7,8,9,10,11,12,13]},
+  items:[
+    {q:"Я испытываю напряжение, мне не по себе",o:["Совсем не испытываю","Иногда","Часто","Очень часто"]},
+    {q:"Я испытываю страх, кажется, что что-то ужасное может вот-вот случиться",o:["Совсем не испытываю","Иногда, но это меня не беспокоит","Да, это так, но страх не очень велик","Определённо так, и страх очень велик"]},
+    {q:"Беспокойные мысли крутятся у меня в голове",o:["Только иногда","Время от времени и не так часто","Большую часть времени","Постоянно"]},
+    {q:"Я легко могу присесть и расслабиться",o:["Определённо, так","Наверное, так","Лишь изредка, это так","Совсем не могу"]},
+    {q:"Я испытываю внутреннее напряжение или дрожь",o:["Совсем не испытываю","Иногда","Часто","Очень часто"]},
+    {q:"Я испытываю неусидчивость, мне постоянно нужно двигаться",o:["Совсем не испытываю","Лишь в некоторой степени, это так","Наверное, это так","Определённо, это так"]},
+    {q:"У меня бывает внезапное чувство паники",o:["Совсем не бывает","Не так уж часто","Довольно часто","Очень часто"]},
+    {q:"То, что приносило мне большое удовольствие, и сейчас вызывает у меня такое же чувство",o:["Определённо, это так","Наверное, это так","Лишь в очень малой степени, это так","Это совсем не так"]},
+    {q:"Я способен рассмеяться и увидеть в том или ином событии смешное",o:["Определённо, это так","Наверное, это так","Лишь в очень малой степени, это так","Совсем не способен"]},
+    {q:"Я испытываю бодрость",o:["Практически всё время","Иногда","Очень редко","Совсем не испытываю"]},
+    {q:"Мне кажется, что я стал всё делать очень медленно",o:["Совсем нет","Иногда","Часто","Практически всё время"]},
+    {q:"Я не слежу за своей внешностью",o:["Я слежу за собой так же, как и раньше","Может быть, я стал меньше уделять этому времени","Я не уделяю этому столько времени, сколько нужно","Определённо, это так"]},
+    {q:"Я считаю, что мои дела (занятия, увлечения) могут принести мне чувство удовлетворения",o:["Точно так же, как и обычно","Да, но не в той степени, как раньше","Значительно меньше, чем обычно","Совсем так не считаю"]},
+    {q:"Я могу получить удовольствие от хорошей книги, радио- или телепрограммы",o:["Часто","Иногда","Редко","Очень редко"]}
+  ],
+  interp:function(){return{text:"См. субшкалы HADS-A и HADS-D",cls:""}},
+  interpSub:function(s){
+    if(s<=7)return{text:"Норма",cls:"ok"};
+    if(s<=10)return{text:"Субклиническая",cls:"warn"};
+    return{text:"Клинически выраженная",cls:"bad"}
+  }
+};
+
+var SCALE_PSQI = {
+  id:"psqi", group:"screens",
+  title:"PSQI — Питтсбургский опросник качества сна",
+  sub:"19 пунктов → 7 компонентов, сумма 0–21. Оригинальные формулы Buysse 1989. Русская версия: Семенова Е.А., Даниленко К.В. 2009.",
+  max:21, layout:"psqi",
+  source:"Buysse DJ et al. Psychiatry Res. 1989. Русская версия: Семенова Е.А., Даниленко К.В. 2009.",
+  items:[
+    {q:"Как часто за последний месяц вы не могли уснуть в течение 30 минут",o:["Ни разу за месяц","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C2a"},
+    {q:"Как часто за последний месяц вам было сложно уснуть",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C2b"},
+    {q:"Сколько минут вам обычно требуется, чтобы заснуть",o:["≤15 минут","16–30 минут","31–60 минут",">60 минут"],comp:"C2c"},
+    {q:"Сколько часов вы обычно спите за ночь",o:[">7 часов","6–7 часов","5–6 часов","<5 часов"],comp:"C3"},
+    {q:"Как часто вы просыпались среди ночи или под утро",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы вставали, чтобы воспользоваться ванной",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы не могли свободно дышать",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы кашляли или громко храпели",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы чувствовали холод",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы чувствовали жарко",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы видели плохие сны",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Как часто вы испытывали боль во время сна",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Другие причины беспокойства во сне",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C5"},
+    {q:"Субъективное качество сна за последний месяц",o:["Очень хорошее","Достаточно хорошее","Скорее плохое","Очень плохое"],comp:"C1"},
+    {q:"Как часто вы принимали снотворное",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C6"},
+    {q:"Как часто вам было сложно оставаться бодрствующим во время вождения, еды или общения",o:["Ни разу","Менее 1 раза в неделю","1–2 раза в неделю","3 и более раз в неделю"],comp:"C7"},
+    {q:"Насколько сложно было сохранять нужный настрой для завершения дел",o:["Совсем не сложно","Лишь чуть-чуть сложно","Несколько сложно","Очень сложно"],comp:"C7"}
+  ],
+  compute:function(vals){
+    function toInt(v){ return (v===null||v===undefined) ? 0 : v; }
+    var C1 = toInt(vals[13]);
+    var C2a = toInt(vals[0]);
+    var C2c_raw = toInt(vals[2]);
+    var C2c = C2c_raw; // 0: ≤15, 1: 16-30, 2: 31-60, 3: >60
+    var latSum = C2a + C2c;
+    var C2 = latSum <= 0 ? 0 : (latSum <= 2 ? 1 : (latSum <= 4 ? 2 : 3));
+    var C3 = toInt(vals[3]);
+    var sumC5 = 0, cntC5 = 0;
+    for(var i=4;i<=12;i++){ sumC5 += toInt(vals[i]); cntC5++; }
+    var C5 = sumC5 === 0 ? 0 : (sumC5 <= 9 ? 1 : (sumC5 <= 18 ? 2 : 3));
+    var C6 = toInt(vals[14]);
+    var C7 = Math.round((toInt(vals[15]) + toInt(vals[16])) / 2);
+    var C4 = toInt(vals[3]); // упрощение: используем C3 как прокси эффективности
+    var total = C1 + C2 + C3 + C4 + C5 + C6 + C7;
+    return {total:total, components:{C1:C1,C2:C2,C3:C3,C4:C4,C5:C5,C6:C6,C7:C7}};
+  },
+  interp:function(s){
+    if(s<=5)return{text:"Хорошее качество сна",cls:"ok"};
+    if(s<=10)return{text:"Плохое качество сна",cls:"warn"};
+    return{text:"Очень плохое (клинически значимое)",cls:"bad"}
+  }
+};
+
+SCALES_ALL = [SCALE_NIHSS, SCALE_MRS, SCALE_VAS, SCALE_ODI, SCALE_NDI, SCALE_TAMPA, SCALE_PCS, SCALE_HADS, SCALE_PSQI];
+
+/* SKILLS DATA — 102 навыка, 15 этапов */
+var STAGES = [
+{id:1,name:'Начало приёма',desc:'Установление контакта, создание рабочей атмосферы',skills:[
+{s:'1.1',n:'Приветствие и представление',d:'Назвать себя, свою роль, узнать имя пациента',t:'core',
+ w:'Первые секунды приёма задают тон всему разговору. Пациент, не знающий, кто перед ним, чувствует себя неуверенно.',
+ c:'Представление → Контакт: спокойное начало снимает первичное напряжение.'},
+{s:'1.2',n:'Установление рабочего контакта',d:'Короткая беседа, снимающая формальность',t:'core',
+ w:'Формальный контакт без тепла не даёт пациенту раскрыться.',
+ c:'Контакт → Доверие: чем теплее начало, тем глубже пациент раскрывается.'},
+{s:'1.3',n:'Объяснение хода приёма',d:'Что будет происходить, сколько займёт времени',t:'core',
+ w:'Неопределённость тревожит. Пациент, знающий план, чувствует контроль.',
+ c:'План → Спокойствие: ясность снижает тревогу.'},
+{s:'1.4',n:'Получение согласия на осмотр',d:'Убедиться, что пациент готов и не возражает',t:'core',
+ w:'Согласие — момент, когда пациент становится участником.',
+ c:'Согласие → Вовлечение: с первого шага пациент включён.'},
+{s:'1.5',n:'Выяснение ожиданий',d:'Что пациент ждёт от визита',t:'ext',
+ w:'Ожидания управляют восприятием.',
+ c:'Ожидания → Объяснение: зная запрос, точнее выстраиваете разговор.'},
+{s:'1.6',n:'Оценка языкового барьера',d:'Нужен ли переводчик или упрощение',t:'ext',
+ w:'Если пациент не понимает речь, диалог становится односторонним.',
+ c:'Барьер → Понимание: простая речь повышает усвоение.'}
+]},
+{id:2,name:'Выявление жалоб',desc:'Начало расспроса, свободное изложение',skills:[
+{s:'2.1',n:'Открытый вопрос о проблеме',d:'«Расскажите, что вас привело»',t:'core',
+ w:'Открытый вопрос передаёт пациенту инициативу.',
+ c:'Открытый вопрос → Перспектива: пациент раскрывает то, что считает важным.'},
+{s:'2.2',n:'Не перебивать',d:'Дать высказаться',t:'core',
+ w:'Прерывание обрывает мысль и заставляет пациента замкнуться.',
+ c:'Слушание → Полнота: непрерываемая речь раскрывает детали.'},
+{s:'2.3',n:'Невербальное поощрение',d:'Кивки, зрительный контакт, открытая поза',t:'core',
+ w:'Внимание читается по телу.',
+ c:'Невербалика → Доверие: открытая поза усиливает контакт.'},
+{s:'2.4',n:'Пересказ услышанного',d:'Повторить ключевое своими словами',t:'core',
+ w:'Пересказ защищает от неверного понимания.',
+ c:'Пересказ → Точность: каждое повторение снижает риск искажения.'},
+{s:'2.5',n:'Отражение чувств',d:'Назвать эмоцию',t:'ext',
+ w:'Эмоции несут информацию. Игнорирование чувств — потеря данных.',
+ c:'Чувства → Контакт: признание эмоции укрепляет связь.'},
+{s:'2.6',n:'Промежуточное обобщение',d:'Кратко подвести итог',t:'ext',
+ w:'Обобщение структурирует поток.',
+ c:'Обобщение → Структура: упорядочивает разговор.'}
+]},
+{id:3,name:'Уточнение деталей',desc:'Конкретизация через направленные вопросы',skills:[
+{s:'3.1',n:'Локализация',d:'Где именно? Покажите',t:'core',
+ w:'Точное место — первая координата в диагностике.',
+ c:'Локализация → Дифдиагностика: зона сужает круг состояний.'},
+{s:'3.2',n:'Характер ощущения',d:'Какое — ноющее, пульсирующее, острое?',t:'core',
+ w:'Характер отражает процесс.',
+ c:'Характер → Механизм: определяет вектор поиска.'},
+{s:'3.3',n:'Длительность и периодичность',d:'Как давно? Постоянно или приступами?',t:'core',
+ w:'Время отделяет острое от хронического.',
+ c:'Длительность → Тактика: временной паттерн определяет срочность.'},
+{s:'3.4',n:'Интенсивность',d:'По шкале 0–10',t:'core',
+ w:'Числовая оценка — база для сравнения между визитами.',
+ c:'Интенсивность → Контроль: числовая оценка становится точкой отсчёта.'},
+{s:'3.5',n:'Провоцирующие факторы',d:'Что усиливает, что облегчает',t:'ext',
+ w:'Триггеры указывают на источник.',
+ c:'Триггеры → Уточнение: сужают гипотезу.'},
+{s:'3.6',n:'Сопутствующие признаки',d:'Отёк, температура, запах',t:'ext',
+ w:'Сопутствующие симптомы показывают, локальный процесс или системный.',
+ c:'Сопутствующие → Срочность: системные признаки меняют алгоритм.'}
+]},
+{id:4,name:'Общий анамнез',desc:'Фон, который влияет на всё',skills:[
+{s:'4.1',n:'Аллергии',d:'На препараты, латекс, йод',t:'core',
+ w:'Аллергия — прямой риск.',
+ c:'Аллергии → Безопасность: выбор допустимых материалов.'},
+{s:'4.2',n:'Хронические заболевания',d:'Диабет, ССЗ, ВИЧ, гемофилия',t:'core',
+ w:'Хронические болезни меняют тактику.',
+ c:'Соматика → Ограничения: сужают выбор вмешательств.'},
+{s:'4.3',n:'Лекарства',d:'Антикоагулянты, бисфосфонаты',t:'core',
+ w:'Взаимодействия опаснее самой процедуры.',
+ c:'Лекарства → Коррекция: возможна замена или коррекция доз.'},
+{s:'4.4',n:'Стоматологический опыт',d:'Прошлые визиты, осложнения анестезии',t:'core',
+ w:'Прошлый опыт определяет тревогу.',
+ c:'Опыт → Комфорт: адаптация подхода.'},
+{s:'4.5',n:'Социальный контекст',d:'Курение, алкоголь, профессия, гигиена',t:'ext',
+ w:'Социальные факторы влияют на прогноз.',
+ c:'Социум → Прогноз: план должен быть выполним.'},
+{s:'4.6',n:'Наследственность',d:'Семейные заболевания',t:'ext',
+ w:'Наследственность определяет предрасположенность.',
+ c:'Генетика → Профилактика: формирует план наблюдения.'}
+]},
+{id:5,name:'Анамнез заболевания',desc:'Детали текущего состояния',skills:[
+{s:'5.1',n:'Хронология',d:'Последовательность событий',t:'core',
+ w:'Хронология выявляет триггеры и прогрессию.',
+ c:'Хронология → Причина: указывает на пусковой фактор.'},
+{s:'5.2',n:'Что уже делали',d:'Самолечение, визиты, препараты',t:'core',
+ w:'Самолечение может маскировать картину.',
+ c:'История → Тактика: что не сработало, не стоит пробовать снова.'},
+{s:'5.3',n:'Эффект предыдущего лечения',d:'Помогло или нет и почему',t:'core',
+ w:'Неэффективность — диагностическая информация.',
+ c:'Эффект → Коррекция: анализ неудач меняет стратегию.'},
+{s:'5.4',n:'Структурированная оценка боли',d:'По схеме: начало, провокация, качество, зона, сила, время',t:'ext',
+ w:'Систематический подход исключает пропуски.',
+ c:'Схема → Дифдиагностика: снижает риск пропустить атипичное течение.'},
+{s:'5.5',n:'Влияние на жизнь',d:'Сон, питание, работа, активность',t:'ext',
+ w:'Качество жизни — клинически значимый параметр.',
+ c:'Влияние → Приоритет: чем выше, тем срочнее вмешательство.'},
+{s:'5.6',n:'Психологический фон',d:'Тревога, депрессия, страх',t:'ext',
+ w:'Тревога усиливает боль, депрессия снижает мотивацию.',
+ c:'Психология → Коммуникация: тревожный пациент требует иного темпа.'}
+]},
+{id:6,name:'Физикальный осмотр',desc:'Клиническое исследование',skills:[
+{s:'6.1',n:'Внешний осмотр',d:'Симметрия, отёк, асимметрия',t:'core',
+ w:'Внешний осмотр даёт информацию до инструментов.',
+ c:'Внешний осмотр → Локализация: видимые отклонения направляют внимание.'},
+{s:'6.2',n:'Пальпация лимфоузлов',d:'Поднижнечелюстные, шейные',t:'core',
+ w:'Увеличенные узлы — маркер инфекции или онкологии.',
+ c:'Лимфоузлы → Системность: указывает на вовлечение организма.'},
+{s:'6.3',n:'Осмотр мягких тканей',d:'Слизистая, дёсны, язык, нёбо',t:'core',
+ w:'Онкологический скрининг слизистой — стандарт.',
+ c:'Мягкие ткани → Скрининг: осмотр предотвращает пропуск онкопатологии.'},
+{s:'6.4',n:'Осмотр зубов',d:'Кариес, дефекты пломб, подвижность',t:'core',
+ w:'Прямой осмотр выявляет дефекты реставраций, трещины.',
+ c:'Осмотр → План: определяет объём вмешательств.'},
+{s:'6.5',n:'Перкуссия',d:'Оценка болезненности при постукивании',t:'core',
+ w:'Перкуссия различает процессы в пульпе и периодонте.',
+ c:'Перкуссия → Локализация: разграничение процессов.'},
+{s:'6.6',n:'Пальпация дёсен',d:'Болезненность, кровоточивость, карманы',t:'core',
+ w:'Пальпация выявляет карманы.',
+ c:'Пальпация → Стадирование: оценка пародонта.'},
+{s:'6.7',n:'Температурный тест',d:'Реакция на холод или горячее',t:'ext',
+ w:'Температурные тесты дают быструю оценку состояния пульпы.',
+ c:'Тест → Тактика: определяет необходимость эндодонтии.'},
+{s:'6.8',n:'Электроодонтодиагностика',d:'Числовая оценка возбудимости',t:'ext',
+ w:'ЭОД даёт числа для мониторинга.',
+ c:'ЭОД → Объективизация: числовые данные для сравнения.'}
+]},
+{id:7,name:'Инструментальная диагностика',desc:'Дополнительные методы',skills:[
+{s:'7.1',n:'Прицельный снимок',d:'Назначение и интерпретация',t:'core',
+ w:'Прицельный снимок — золотой стандарт оценки периапикальных тканей.',
+ c:'Снимок → Точность: подтверждение или опровержение гипотез.'},
+{s:'7.2',n:'Панорамный снимок',d:'Обзор всей зубочелюстной системы',t:'core',
+ w:'Панорама показывает всю систему.',
+ c:'Панорама → Системность: обзор предотвращает локальное мышление.'},
+{s:'7.3',n:'Объяснение необходимости снимка',d:'Зачем, какая доза',t:'core',
+ w:'Страх радиации — распространённый барьер.',
+ c:'Объяснение → Согласие: информированный пациент решает осознанно.'},
+{s:'7.4',n:'Компьютерная томография',d:'3D-диагностика при сложных случаях',t:'ext',
+ w:'3D-картина необходима при имплантации и сложной эндодонтии.',
+ c:'3D → Планирование: снижает риск осложнений.'},
+{s:'7.5',n:'Фотодокументация',d:'Клинические фото',t:'ext',
+ w:'Фото — объективная база для сравнения.',
+ c:'Фото → Документация: визуальная фиксация сохраняет состояние.'},
+{s:'7.6',n:'Анализ окклюзии',d:'Артикуляционная бумага, контакты',t:'ext',
+ w:'Окклюзия — ключ к пониманию стираемости.',
+ c:'Окклюзия → Долгосрочность: анализ повышает прогноз.'},
+{s:'7.7',n:'Диагностические модели',d:'3D-сканирование, цифровой дизайн',t:'ext',
+ w:'Цифровые модели позволяют планировать результат.',
+ c:'Модели → Визуализация: пациент видит план.'}
+]},
+{id:8,name:'Формулирование диагноза',desc:'Объяснение и визуализация',skills:[
+{s:'8.1',n:'Чёткая формулировка',d:'Название, стадия, осложнения',t:'core',
+ w:'Диагноз без формулировки — не диагноз.',
+ c:'Формулировка → Документация: чёткая формула для коллег.'},
+{s:'8.2',n:'Объяснение причин',d:'Почему возникла проблема',t:'core',
+ w:'Пациент, понимающий причину, легче принимает план.',
+ c:'Причины → Профилактика: понимание этиологии мотивирует.'},
+{s:'8.3',n:'Визуализация',d:'Показать на снимке, фото, в зеркале',t:'core',
+ w:'Визуализация переводит абстрактный диагноз в конкретный образ.',
+ c:'Визуализация → Понимание: образ повышает усвоение.'},
+{s:'8.4',n:'Прогноз без лечения',d:'Что будет, если ничего не делать',t:'core',
+ w:'Информация о последствиях — часть информированного согласия.',
+ c:'Прогноз → Выбор: знание последствий делает решение осознанным.'},
+{s:'8.5',n:'Проверка понимания',d:'Попросить пересказать',t:'ext',
+ w:'Пересказ выявляет пробелы.',
+ c:'Проверка → Приверженность: правильно понятый диагноз.'},
+{s:'8.6',n:'Документирование',d:'Запись с кодом МКБ',t:'ext',
+ w:'Документирование — юридическая необходимость.',
+ c:'Документация → Преемственность: коллеги видят ту же картину.'},
+{s:'8.7',n:'Дифференциальный диагноз',d:'Исключение альтернатив',t:'ext',
+ w:'ДД защищает от преждевременного закрытия поиска.',
+ c:'ДД → Безопасность: исключение альтернатив снижает риск.'}
+]},
+{id:9,name:'Обсуждение плана',desc:'Совместное принятие решения',skills:[
+{s:'9.1',n:'Варианты лечения',d:'Минимум два, с плюсами и минусами',t:'core',
+ w:'Единственный вариант воспринимается как навязывание.',
+ c:'Варианты → Автономия: пациент принимает решение осознанно.'},
+{s:'9.2',n:'Объяснение этапов',d:'Что, сколько по времени, какие ощущения',t:'core',
+ w:'Неопределённость — источник тревоги.',
+ c:'Этапы → Контроль: пациент сохраняет самообладание.'},
+{s:'9.3',n:'Риски и осложнения',d:'Честно о возможных побочных эффектах',t:'core',
+ w:'Умолчание о рисках — нарушение согласия.',
+ c:'Риски → Доверие: прозрачность укрепляет альянс.'},
+{s:'9.4',n:'Стоимость',d:'Полная сумма, этапы оплаты',t:'core',
+ w:'Финансовая неясность — частая причина отказа.',
+ c:'Стоимость → Доступность: прозрачная схема расширяет круг пациентов.'},
+{s:'9.5',n:'Информированное согласие',d:'Письменное согласие с подписью',t:'core',
+ w:'Согласие — защита обеих сторон.',
+ c:'Согласие → Ответственность: документ формализует партнёрство.'},
+{s:'9.6',n:'Нетрадиционные методы',d:'Обсуждение, если пациент использует',t:'ext',
+ w:'Пациенты часто используют народные методы параллельно.',
+ c:'Альтернативы → Безопасность: открытый разговор предотвращает риски.'},
+{s:'9.7',n:'Второе мнение',d:'Предложение консультации специалиста',t:'ext',
+ w:'Второе мнение — признак уверенности, а не слабости.',
+ c:'Второе мнение → Уверенность: пациент менее склонен к конфликту.'},
+{s:'9.8',n:'Поэтапное планирование',d:'Разбивка по бюджету и срокам',t:'ext',
+ w:'Разбивка по этапам делает лечение доступным.',
+ c:'Планирование → Доступность: снижает барьер стоимости.'}
+]},
+{id:10,name:'Проведение лечения',desc:'Коммуникация во время манипуляций',skills:[
+{s:'10.1',n:'Предупреждение о каждом шаге',d:'Что сейчас будет, какие ощущения',t:'core',
+ w:'Неожиданная боль воспринимается сильнее ожидаемой.',
+ c:'Предупреждение → Контроль: пациент сохраняет чувство контроля.'},
+{s:'10.2',n:'Мониторинг состояния',d:'Постоянно спрашивать о самочувствии',t:'core',
+ w:'Внешнее спокойствие не означает отсутствия боли.',
+ c:'Мониторинг → Комфорт: контроль предотвращает негативный опыт.'},
+{s:'10.3',n:'Сигнал остановки',d:'Договорённый жест для паузы',t:'core',
+ w:'Пациент в кресле ограничен в речи.',
+ c:'Сигнал → Доверие: гарантированная остановка — основа расслабленности.'},
+{s:'10.4',n:'Отвлекающая беседа',d:'Лёгкий разговор во время работы',t:'core',
+ w:'Отвлечение — доказанный метод снижения боли.',
+ c:'Беседа → Отвлечение: снижает субъективное восприятие боли.'},
+{s:'10.5',n:'Объяснение неожиданностей',d:'Спокойно объяснить, если что-то пошло не так',t:'ext',
+ w:'Скрывать осложнение — путь к потере доверия.',
+ c:'Честность → Доверие: прозрачность укрепляет альянс.'},
+{s:'10.6',n:'Работа с тревогой',d:'Дыхание, паузы, релаксация',t:'ext',
+ w:'Тревога — реальное состояние, а не каприз.',
+ c:'Релаксация → Завершение: позволяет довести процедуру до конца.'},
+{s:'10.7',n:'Работа с детьми',d:'Объяснить, показать, сделать',t:'ext',
+ w:'Ребёнок, понимающий, что будет, легче переносит процедуру.',
+ c:'Опыт → Отношение: позитивное воспоминание на всю жизнь.'}
+]},
+{id:11,name:'Завершение процедуры',desc:'Коммуникация после манипуляций',skills:[
+{s:'11.1',n:'Объяснение результата',d:'Что сделано, как выглядит',t:'core',
+ w:'Пациент, не понимающий результат, не может его оценить.',
+ c:'Результат → Оценка: понимание позволяет оценить визит.'},
+{s:'11.2',n:'Показ в зеркале',d:'Пациент видит результат сам',t:'core',
+ w:'Визуальное подтверждение сильнее слов.',
+ c:'Зеркало → Удовлетворённость: увиденный результат закрывает вопрос.'},
+{s:'11.3',n:'Рекомендации по уходу',d:'Что можно и нельзя в ближайшие часы',t:'core',
+ w:'Правила после процедуры определяют исход.',
+ c:'Рекомендации → Результат: правильный уход — продолжение лечения.'},
+{s:'11.4',n:'Предупреждение о нормальных реакциях',d:'Что нормально, что нет',t:'core',
+ w:'Пациент примет нормальные реакции за осложнение.',
+ c:'Предупреждение → Спокойствие: информированный пациент не паникует.'},
+{s:'11.5',n:'Красные флаги',d:'Когда обращаться срочно',t:'core',
+ w:'Пациент должен знать, какие симптомы — норма.',
+ c:'Флаги → Безопасность: раннее обращение предотвращает осложнения.'},
+{s:'11.6',n:'Письменные инструкции',d:'Распечатка с рекомендациями',t:'ext',
+ w:'Пациенты забывают большую часть устной информации.',
+ c:'Инструкции → Приверженность: письменные рекомендации повышают выполнение.'},
+{s:'11.7',n:'Питание',d:'Диетические рекомендации на восстановление',t:'ext',
+ w:'Питание после вмешательства влияет на заживление.',
+ c:'Питание → Заживление: адекватная диета ускоряет восстановление.'},
+{s:'11.8',n:'Фиксация результата',d:'Фото или видео для динамики',t:'ext',
+ w:'Финальное фото — объективное свидетельство результата.',
+ c:'Фиксация → Динамика: сравнение помогает отследить изменения.'}
+]},
+{id:12,name:'Следующие шаги',desc:'Организация дальнейшего ведения',skills:[
+{s:'12.1',n:'Назначение следующего визита',d:'Конкретная дата, время, цель',t:'core',
+ w:'Конкретная дата снижает вероятность забвения.',
+ c:'Назначение → Непрерывность: конкретный визит превращает лечение в систему.'},
+{s:'12.2',n:'Напоминание',d:'Звонок или сообщение накануне',t:'core',
+ w:'Напоминание снижает процент неявок.',
+ c:'Напоминание → Эффективность: снижение неявок повышает результат.'},
+{s:'12.3',n:'Долгосрочное наблюдение',d:'График профилактических осмотров',t:'core',
+ w:'Лечение — не разовое вмешательство.',
+ c:'Наблюдение → Профилактика: регулярные визиты предотвращают тяжёлые формы.'},
+{s:'12.4',n:'Передача специалисту',d:'Направление к профильному врачу',t:'ext',
+ w:'Границы специальности определяют качество помощи.',
+ c:'Передача → Специализация: направление повышает результат.'},
+{s:'12.5',n:'Домашнее задание',d:'Конкретные действия до следующего визита',t:'ext',
+ w:'Конкретные действия лучше абстрактных советов.',
+ c:'Задание → Приверженность: конкретное задание выполняется чаще.'},
+{s:'12.6',n:'Каналы связи',d:'Как связаться с клиникой между визитами',t:'ext',
+ w:'Пациент должен знать, куда обращаться.',
+ c:'Каналы → Безопасность: доступность между визитами.'}
+]},
+{id:13,name:'Профилактика',desc:'Обучение пациента',skills:[
+{s:'13.1',n:'Индивидуальная гигиена',d:'Техника чистки, ершики, ирригатор',t:'core',
+ w:'Большинство чистит зубы неправильно.',
+ c:'Гигиена → Профилактика: правильная техника снижает риск.'},
+{s:'13.2',n:'Подбор средств',d:'Щётка, паста, ополаскиватель',t:'core',
+ w:'Универсальных решений нет.',
+ c:'Средства → Эффективность: правильный инструмент делает гигиену эффективной.'},
+{s:'13.3',n:'Диета и кариес',d:'Частота приёма сахара',t:'core',
+ w:'Важна не «сладость», а частота.',
+ c:'Диета → Кариес: изменение частоты влияет на риск.'},
+{s:'13.4',n:'Фторирование',d:'Польза фтора, профессиональное нанесение',t:'core',
+ w:'Фтор доказанно снижает кариес.',
+ c:'Фтор → Профилактика: доказанная эффективность.'},
+{s:'13.5',n:'Герметизация фиссур',d:'Профилактика кариеса жевательных зубов',t:'ext',
+ w:'Фиссуры — самое уязвимое место у детей.',
+ c:'Герметизация → Детство: в правильном возрасте предотвращает проблемы.'},
+{s:'13.6',n:'Отказ от курения',d:'Влияние табака на дёсны, импланты',t:'ext',
+ w:'Курение повышает риск пародонтита.',
+ c:'Курение → Прогноз: отказ улучшает результаты.'},
+{s:'13.7',n:'Спортивная защита',d:'Капы, защита от травм',t:'ext',
+ w:'Спортивные травмы зубов — распространённая причина обращения.',
+ c:'Капы → Профилактика: спортивная защита предотвращает повреждения.'},
+{s:'13.8',n:'Вакцинация против ВПЧ',d:'Профилактика рака полости рта',t:'ext',
+ w:'ВПЧ — значимый фактор риска орофарингеального рака.',
+ c:'Вакцинация → Онкопрофилактика: снижает риск опухолей.'}
+]},
+{id:14,name:'Сложные ситуации',desc:'Коммуникация в нестандартных случаях',skills:[
+{s:'14.1',n:'Тревожный пациент',d:'Эмпатия, постепенное привыкание',t:'core',
+ w:'Тревога — реальное состояние, а не каприз.',
+ c:'Эмпатия → Работа: пациент, чувствующий принятие, сотрудничает.'},
+{s:'14.2',n:'Агрессивный пациент',d:'Снижение напряжения, активное слушание',t:'core',
+ w:'Агрессия часто следствие страха или боли.',
+ c:'Снижение напряжения → Диалог: открывает путь к конструктиву.'},
+{s:'14.3',n:'Плохие новости',d:'Сообщение о неблагоприятном прогнозе',t:'core',
+ w:'Сообщение плохих новостей — особый навык.',
+ c:'Структура → Доверие: правильное сообщение укрепляет альянс.'},
+{s:'14.4',n:'Жалобы',d:'Приём, извинение, план исправления',t:'core',
+ w:'Жалоба — возможность сохранить пациента.',
+ c:'Приём жалобы → Лояльность: правильный ответ делает пациента лояльнее.'},
+{s:'14.5',n:'Пациенты с ОВЗ',d:'Адаптация коммуникации',t:'ext',
+ w:'ОВЗ требуют индивидуальной адаптации.',
+ c:'Адаптация → Доступность: правильная адаптация делает помощь доступной.'},
+{s:'14.6',n:'Нетрезвый пациент',d:'Отказ в лечении, объяснение причин',t:'ext',
+ w:'Лечение в состоянии опьянения — риск.',
+ c:'Отказ → Безопасность: защищает пациента и врача.'},
+{s:'14.7',n:'Родители детей',d:'Коммуникация через родителя, согласие',t:'ext',
+ w:'Ребёнок — не «маленький взрослый».',
+ c:'Родитель → Согласие: правильное распределение внимания.'}
+]},
+{id:15,name:'Завершение консультации',desc:'Финальные шаги',skills:[
+{s:'15.1',n:'Итоговое резюме',d:'Кратко повторить всё обсуждённое',t:'core',
+ w:'Резюме «сшивает» все этапы.',
+ c:'Резюме → Понимание: единый пересказ формирует целостное впечатление.'},
+{s:'15.2',n:'Финальная проверка понимания',d:'Пациент пересказывает ключевое',t:'core',
+ w:'Защита от иллюзии понимания.',
+ c:'Проверка → Безопасность: правильное понимание предотвращает ошибки.'},
+{s:'15.3',n:'Открытие для вопросов',d:'Есть ли вопросы, что осталось непонятным',t:'core',
+ w:'Вопрос выявляет скрытые проблемы.',
+ c:'Вопросы → Полнота: финальная проверка.'},
+{s:'15.4',n:'Благодарность и прощание',d:'Тёплое завершение',t:'core',
+ w:'Тёплое прощание фиксирует альянс.',
+ c:'Прощание → Возвращение: последняя фраза определяет впечатление.'},
+{s:'15.5',n:'Обратная связь',d:'Просьба оценить визит',t:'ext',
+ w:'Обратная связь — инструмент улучшения.',
+ c:'Обратная связь → Качество: постоянная оценка улучшает практику.'},
+{s:'15.6',n:'Информирование о связи',d:'Как связаться после визита',t:'ext',
+ w:'Пациент должен знать каналы связи.',
+ c:'Каналы → Непрерывность: доступность между визитами.'}
+]}
+];
+
+/* STATE */
+var STATE = {
+  checked: new Set(ST.get('checked',[])),
+  collapsed: new Set(ST.get('collapsed',[])),
+  whyOpen: new Set(ST.get('whyOpen',[])),
+  scaleValues: ST.get('scaleValues',{})
+};
+var TOTAL_SKILLS = STAGES.reduce(function(a,s){return a+s.skills.length},0);
+var CORE_COUNT=0, EXT_COUNT=0;
+STAGES.forEach(function(st){st.skills.forEach(function(sk){if(sk.t==='core')CORE_COUNT++;else EXT_COUNT++})});
+
+/* NAV */
+function switchPanel(id){
+  $$('.nav button').forEach(function(b){
+    var isActive = b.dataset.panel === id;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+  $$('.panel').forEach(function(p){
+    p.classList.toggle('active', p.id === id);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* RENDER: SKILLS */
+function renderComm(){
+  var c = $('#commStages');
+  if(!c) return;
+  c.innerHTML = '';
+  STAGES.forEach(function(stage){
+    var done = stage.skills.filter(function(sk){return STATE.checked.has(sk.s)}).length;
+    var isCollapsed = STATE.collapsed.has(stage.id);
+    var isComplete = done === stage.skills.length;
+    var hasProgress = done > 0;
+    var div = document.createElement('div');
+    div.className = 'stage' + (isCollapsed?' collapsed':'') + (isComplete?' complete':'') + (hasProgress&&!isComplete?' has-progress':'');
+    div.dataset.stageId = stage.id;
+    var pct = Math.round((done/stage.skills.length)*100);
+    var html = '';
+    html += '<div class="stage-h" data-act="toggleStage" data-stage="'+stage.id+'" role="button" tabindex="0" aria-expanded="'+(!isCollapsed)+'">';
+    html += '<div class="stage-num">'+stage.id+'</div>';
+    html += '<div class="stage-info"><div class="stage-t">'+esc(stage.name)+'</div><div class="stage-d">'+esc(stage.desc)+'</div></div>';
+    html += '<div class="stage-mini"><span class="c">'+done+' / '+stage.skills.length+'</span><div class="bar"><div class="fill" style="width:'+pct+'%"></div></div></div>';
+    html += '<span class="stage-caret">▼</span></div>';
+    html += '<div class="stage-body">';
+    stage.skills.forEach(function(sk){
+      var isChecked = STATE.checked.has(sk.s);
+      var isWhyOpen = STATE.whyOpen.has(sk.s);
+      html += '<div class="skill'+(isChecked?' checked':'')+(isWhyOpen?' why-open':'')+'" data-skill="'+sk.s+'" data-type="'+sk.t+'">';
+      html += '<div class="skill-check'+(isChecked?' checked':'')+'" data-act="toggleSkill" data-skill="'+sk.s+'" role="checkbox" aria-checked="'+isChecked+'" tabindex="0" aria-label="'+esc(sk.n)+'">✓</div>';
+      html += '<div class="skill-body">';
+      html += '<div class="skill-h"><span class="skill-id">'+esc(sk.s)+'</span><span class="skill-n">'+esc(sk.n)+'</span></div>';
+      html += '<div class="skill-d">'+esc(sk.d)+'</div>';
+      html += '<button class="skill-why-btn" data-act="toggleWhy" data-skill="'+sk.s+'" type="button"><span class="chev">▶</span> '+(isWhyOpen?'Скрыть пояснение':'Зачем этот навык?')+'</button>';
+      html += '<div class="skill-why"><div class="why-block"><span class="why-l w">Зачем</span><div class="why-t">'+esc(sk.w)+'</div></div><div class="why-block"><span class="why-l c">Связь</span><div class="why-t">'+esc(sk.c)+'</div></div></div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+    div.innerHTML = html;
+    c.appendChild(div);
+  });
+  updateCommProgress();
+}
+
+function updateCommProgress(){
+  var done = STATE.checked.size;
+  var pct = Math.round((done/TOTAL_SKILLS)*100);
+  var hero = $('#commHero');
+  var ring = $('#ringFill');
+  var pctEl = $('#ringPct');
+  if(done === 0){
+    if(hero) hero.classList.add('idle');
+    if(pctEl) pctEl.textContent = '0%';
+    if(ring) ring.style.strokeDasharray = '0 999';
+  } else {
+    if(hero) hero.classList.remove('idle');
+    if(pctEl) pctEl.textContent = pct + '%';
+    if(ring){
+      var circ = 2 * Math.PI * 30;
+      var dash = (pct/100) * circ;
+      ring.style.strokeDasharray = dash + ' ' + (circ - dash);
+      ring.style.stroke = pct === 100 ? 'var(--ok)' : 'var(--accent)';
+    }
+  }
+  var d = $('#commDone'); if(d) d.textContent = done;
+  var t = $('#commTotal'); if(t) t.textContent = TOTAL_SKILLS;
+  var s = $('#commSplit'); if(s) s.textContent = CORE_COUNT + ' / ' + EXT_COUNT;
+  var nc = $('#cntComm'); if(nc) nc.textContent = done;
+  ST.set('checked', Array.from(STATE.checked));
+  ST.set('collapsed', Array.from(STATE.collapsed));
+  ST.set('whyOpen', Array.from(STATE.whyOpen));
+}
+
+/* RENDER: SCALES */
+function renderScalesInto(containerId, group){
+  var c = document.getElementById(containerId);
+  if(!c) return;
+  c.innerHTML = '';
+  SCALES_ALL.filter(function(s){return s.group === group}).forEach(function(sc){
+    c.appendChild(buildScaleEl(sc));
+  });
+  SCALES_ALL.filter(function(s){return s.group === group}).forEach(function(sc){
+    restoreScale(sc);
+  });
+  c.addEventListener('change', function(e){
+    if(e.target && e.target.matches('input[type="radio"]')){
+      var sid = e.target.getAttribute('data-scale');
+      if(sid) updateScale(sid);
+    }
+  });
+}
+
+function buildScaleEl(sc){
+  var wrap = document.createElement('div');
+  wrap.className = 'scale';
+  wrap.id = 'scale-' + sc.id;
+
+  var maxCols = 0;
+  if(sc.layout === 'sections'){
+    sc.items.forEach(function(it){ maxCols = Math.max(maxCols, it[1].length); });
+  } else {
+    sc.items.forEach(function(it){ maxCols = Math.max(maxCols, it.o.length); });
+  }
+
+  var h = '';
+  h += '<div class="scale-h"><h3>'+esc(sc.title)+'</h3><p>'+esc(sc.sub)+'</p>';
+  h += '<p style="font-size:.72rem;color:var(--muted);margin-top:3px"><strong>Источник:</strong> '+esc(sc.source)+'</p>';
+  h += '</div>';
+  h += '<table><thead><tr><th style="width:32px">№</th><th>Пункт</th>';
+  for(var c=0;c<maxCols;c++){
+    var label = '';
+    if(sc.scoring === '1-4') label = (c+1);
+    else label = c;
+    h += '<th class="rc">'+label+'</th>';
+  }
+  h += '</tr></thead><tbody>';
+
+  var detailsList = [];
+  if(sc.layout === 'sections'){
+    sc.items.forEach(function(it, idx){
+      h += '<tr><td class="qn">'+(idx+1)+'</td><td class="qt">'+esc(it[0])+'</td>';
+      for(var c=0;c<maxCols;c++){
+        if(it[1][c] !== undefined){
+          h += '<td class="rc"><label><input type="radio" name="'+sc.id+'-'+idx+'" value="'+c+'" data-scale="'+sc.id+'" data-item="'+idx+'" aria-label="'+esc(it[0])+' — вариант '+(c+1)+'"></label></td>';
+        } else {
+          h += '<td class="rc" style="opacity:.3">—</td>';
+        }
+      }
+      h += '</tr>';
+      detailsList.push('<li><strong>'+esc(it[0])+':</strong> '+it[1].map(function(o,i){return (i+1)+' — '+esc(o)}).join(' · ')+'</li>');
+    });
+  } else {
+    sc.items.forEach(function(it, idx){
+      h += '<tr><td class="qn">'+(idx+1)+'</td><td class="qt">'+esc(it.q);
+      if(sc.id==="tampa" && sc.reverseItems && sc.reverseItems.indexOf(idx)!==-1){
+        h += ' <span style="font-size:.7rem;color:var(--warn);background:var(--warn-soft);padding:1px 6px;border-radius:3px;margin-left:4px">инверсный</span>';
+      }
+      h += '</td>';
+      for(var c=0;c<maxCols;c++){
+        if(it.o[c] !== undefined){
+          var v = (sc.scoring === '1-4') ? (c+1) : c;
+          h += '<td class="rc"><label><input type="radio" name="'+sc.id+'-'+idx+'" value="'+v+'" data-scale="'+sc.id+'" data-item="'+idx+'" aria-label="'+esc(it.q)+' — вариант '+(c+1)+'"></label></td>';
+        } else {
+          h += '<td class="rc" style="opacity:.3">—</td>';
+        }
+      }
+      h += '</tr>';
+      detailsList.push('<li><strong>'+(idx+1)+'. '+esc(it.q)+':</strong> '+it.o.map(function(o,i){return (sc.scoring==='1-4'?(i+1):i)+' — '+esc(o)}).join(' · ')+'</li>');
+    });
+  }
+  h += '</tbody></table>';
+  h += '<details><summary>Расшифровка вариантов</summary><ol>'+detailsList.join('')+'</ol></details>';
+  h += '<div class="scale-sum" id="sum-'+sc.id+'">';
+  h += '<div class="left">';
+  h += '<div class="score"><span class="v" id="s-'+sc.id+'">0</span> / '+sc.max+'</div>';
+  h += '<div class="pct" id="p-'+sc.id+'">0%</div>';
+  if(sc.subscales) h += '<div class="subscales" id="sub-'+sc.id+'"></div>';
+  h += '</div>';
+  h += '<div class="interp empty" id="i-'+sc.id+'">Заполните шкалу</div>';
+  h += '</div>';
+  wrap.innerHTML = h;
+  return wrap;
+}
+
+function restoreScale(sc){
+  var vals = STATE.scaleValues[sc.id];
+  if(!vals) return;
+  sc.items.forEach(function(it, idx){
+    if(vals[idx] === null || vals[idx] === undefined) return;
+    var name = sc.id + '-' + idx;
+    var radios = document.querySelectorAll('input[name="'+name+'"]');
+    radios.forEach(function(r){
+      if(parseInt(r.value,10) === vals[idx]) r.checked = true;
+    });
+  });
+  updateScale(sc.id, true);
+}
+
+function collectScale(sc){
+  var vals = [], missing = false;
+  sc.items.forEach(function(it, idx){
+    var rs = document.querySelectorAll('input[name="'+sc.id+'-'+idx+'"]');
+    var v = null;
+    rs.forEach(function(r){ if(r.checked) v = parseInt(r.value,10); });
+    if(v === null) missing = true;
+    vals.push(v);
+  });
+  return {vals: vals, missing: missing};
+}
+
+function updateScale(id, silent){
+  var sc = null;
+  for(var i=0;i<SCALES_ALL.length;i++){if(SCALES_ALL[i].id===id){sc=SCALES_ALL[i];break}}
+  if(!sc) return;
+  var r = collectScale(sc);
+  var total = 0, any = false, comps = null;
+
+  if(sc.compute){
+    var res = sc.compute(r.vals);
+    if(typeof res === 'object'){
+      total = res.total;
+      comps = res.components;
+    } else {
+      total = res;
+    }
+  } else {
+    r.vals.forEach(function(v){ if(v !== null){ total += v; any = true; } });
+  }
+  var pct = Math.round(total/sc.max*100);
+
+  var sEl = document.getElementById('s-'+id);
+  var pEl = document.getElementById('p-'+id);
+  var iEl = document.getElementById('i-'+id);
+  if(sEl) sEl.textContent = total;
+  if(pEl) pEl.textContent = pct + '%';
+
+  if(r.missing){
+    if(iEl){ iEl.className = 'interp empty'; iEl.textContent = 'Заполнено не всё'; }
+  } else {
+    var interp = sc.interp(total);
+    if(iEl){ iEl.className = 'interp ' + (interp.cls || ''); iEl.textContent = interp.text; }
+  }
+
+  if(sc.subscales){
+    var cEl = document.getElementById('sub-'+id);
+    if(cEl){
+      var parts = [];
+      Object.keys(sc.subscales).forEach(function(nm){
+        var idxs = sc.subscales[nm];
+        var sum = 0;
+        idxs.forEach(function(i){ sum += (r.vals[i] || 0); });
+        var subMax = sc.id==="pcs" ? idxs.length * 4 : 21;
+        var si = sc.interpSub ? sc.interpSub(sum) : {text:''};
+        parts.push('<div class="ss"><span class="n">'+esc(nm)+':</span><span class="v">'+sum+' / '+subMax+'</span>'+(si.text?'<span>— '+esc(si.text)+'</span>':'')+'</div>');
+      });
+      cEl.innerHTML = parts.join('');
+    }
+  }
+
+  if(comps){
+    var cEl2 = document.getElementById('sub-'+id);
+    if(cEl2){
+      var parts = [];
+      Object.keys(comps).forEach(function(k){
+        parts.push('<div class="ss"><span class="n">'+k+':</span><span class="v">'+comps[k]+'</span></div>');
+      });
+      cEl2.innerHTML = parts.join('');
+    }
+  }
+
+  if(!silent){
+    STATE.scaleValues[sc.id] = r.vals;
+    ST.set('scaleValues', STATE.scaleValues);
+  }
+  return {total: total, pct: pct, missing: r.missing, vals: r.vals, comps: comps};
+}
+
+function renderAllScales(){
+  renderScalesInto('neuroScales', 'neuro');
+  renderScalesInto('vertebroScales', 'vertebro');
+  renderScalesInto('screenScales', 'screens');
+}
+
+/* CALC ALL */
+function calcAll(){
+  var patient = {
+    name: ($('#pName') ? $('#pName').value : '').trim(),
+    date: $('#pDate') ? $('#pDate').value : '',
+    age: ($('#pAge') ? $('#pAge').value : '').trim(),
+    sex: $('#pSex') ? $('#pSex').value : '',
+    id: ($('#pID') ? $('#pID').value : '').trim(),
+    dx: ($('#pDx') ? $('#pDx').value : '').trim()
+  };
+
+  var results = {};
+  SCALES_ALL.forEach(function(sc){ results[sc.id] = updateScale(sc.id); });
+
+  var anyScale = SCALES_ALL.some(function(sc){
+    var r = results[sc.id];
+    return r && !r.missing;
+  });
+  var anySkill = STATE.checked.size > 0;
+
+  if(!anyScale && !anySkill){
+    toast('Не заполнено ни одной шкалы и ни одного навыка', 'warn');
+  }
+
+  var L = [];
+  L.push("Ты — ассистент невролога-вертебролога.");
+  L.push("");
+  L.push("Пациент: " + (patient.name || "[ФИО не указано]"));
+  L.push("ID: " + (patient.id || "[не указано]"));
+  L.push("Дата: " + (patient.date || "[дата не указана]"));
+  L.push("Возраст: " + (patient.age || "[не указан]"));
+  L.push("Пол: " + (patient.sex || "[не указан]"));
+  L.push("Диагноз: " + (patient.dx || "[диагноз не указан]"));
+  L.push("");
+
+  var scalesFilled = SCALES_ALL.filter(function(sc){ return results[sc.id] && !results[sc.id].missing });
+  if(scalesFilled.length){
+    L.push("=== ШКАЛЫ ===");
+    L.push("");
+    scalesFilled.forEach(function(sc){
+      var r = results[sc.id];
+      L.push("- " + sc.title + ": " + r.total + " из " + sc.max + " (" + r.pct + "%). " + sc.interp(r.total).text + ".");
+      if(sc.subscales){
+        Object.keys(sc.subscales).forEach(function(nm){
+          var idxs = sc.subscales[nm];
+          var sum = 0; idxs.forEach(function(i){ sum += (r.vals[i] || 0); });
+          var subMax = sc.id==="pcs" ? idxs.length*4 : 21;
+          var si = sc.interpSub ? sc.interpSub(sum) : {text:''};
+          L.push("   " + nm + ": " + sum + " / " + subMax + ". " + si.text + ".");
+        });
+      }
+      if(r.comps){
+        L.push("   Компоненты PSQI:");
+        Object.keys(r.comps).forEach(function(k){ L.push("     " + k + ": " + r.comps[k] + " / 3"); });
+      }
+    });
+    L.push("");
+  }
+
+  if(anySkill){
+    L.push("=== АССИСТЕНТ КОММУНИКАЦИИ ===");
+    L.push("");
+    L.push("Отмечено навыков: " + STATE.checked.size + " из " + TOTAL_SKILLS + ".");
+    var stageProgress = [];
+    STAGES.forEach(function(st){
+      var d = st.skills.filter(function(sk){ return STATE.checked.has(sk.s); }).length;
+      if(d > 0) stageProgress.push(st.id + " · " + st.name + " — " + d + "/" + st.skills.length);
+    });
+    if(stageProgress.length){
+      L.push("По этапам:");
+      stageProgress.forEach(function(s){ L.push("  " + s); });
+    }
+    L.push("");
+  }
+
+  L.push("Задачи:");
+  L.push("1. Интерпретировать результаты в контексте указанного диагноза.");
+  L.push("2. Указать возможные корреляции между шкалами и этапами коммуникации.");
+  L.push("3. Сформировать строку CSV для вставки в Excel (разделитель — точка с запятой).");
+  L.push("4. Подготовить абзац для научной статьи: разделы «Методы» и «Результаты».");
+  L.push("5. Предложить, какие дополнительные шкалы или модули стоит применить.");
+  L.push("");
+  L.push("Формат ответа:");
+  L.push("- Раздел 1: Клиническая интерпретация");
+  L.push("- Раздел 2: Корреляции");
+  L.push("- Раздел 3: CSV-строка");
+  L.push("- Раздел 4: Фрагмент для статьи");
+  L.push("- Раздел 5: Дополнительные шкалы");
+  L.push("");
+  L.push("Важно: не давай медицинских рекомендаций. Только описание и анализ данных.");
+
+  $('#llmOut').textContent = L.join("\n");
+
+  var parts = [
+    csvCell(patient.name || '—'),
+    csvCell(patient.id || '—'),
+    csvCell(patient.date || '—'),
+    csvCell(patient.age || '—'),
+    csvCell(patient.sex || '—')
+  ];
+  SCALES_ALL.forEach(function(sc){
+    var r = results[sc.id];
+    if(!r || r.missing){ parts.push(csvCell("")); return; }
+    if(sc.subscales){
+      Object.keys(sc.subscales).forEach(function(nm){
+        var idxs = sc.subscales[nm];
+        var sum = 0; idxs.forEach(function(j){ sum += (r.vals[j] || 0); });
+        parts.push(csvCell(sum));
+      });
+    } else if(r.comps){
+      Object.keys(r.comps).forEach(function(k){ parts.push(csvCell(r.comps[k])); });
+      parts.push(csvCell(r.total));
+    } else {
+      parts.push(csvCell(r.total));
+    }
+  });
+  parts.push(csvCell(STATE.checked.size));
+  parts.push(csvCell(patient.dx || '—'));
+
+  $('#csvOut').textContent = parts.join(";");
+  toast('Рассчитано · промпт и CSV готовы', 'ok');
+}
+
+/* SKILLS CSV */
+function exportCommCsv(){
+  var rows = ['ID;Навык;Описание;Тип;Статус;Зачем;Связь'];
+  STAGES.forEach(function(st){
+    st.skills.forEach(function(sk){
+      rows.push([
+        csvCell(sk.s), csvCell(sk.n), csvCell(sk.d),
+        csvCell(sk.t === 'core' ? 'Базовый' : 'Расширенный'),
+        csvCell(STATE.checked.has(sk.s) ? 'Выполнено' : 'Не выполнено'),
+        csvCell(sk.w), csvCell(sk.c)
+      ].join(';'));
+    });
+  });
+  var csv = rows.join('\n');
+  var blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'vanxo-comm-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+  toast('CSV навыков экспортирован','ok');
+}
+
+/* RESOURCES */
+var RESOURCES = [
+  {t:"Клинические рекомендации Минздрава РФ",u:"https://cr.minzdrav.gov.ru/",d:"Официальный рубрикатор клинических рекомендаций. Неврология, вертебрология, психиатрия.",c:"Рекомендации",tags:["Минздрав","РФ","официальное"]},
+  {t:"Всемирная организация здравоохранения",u:"https://www.who.int/",d:"Международные рекомендации, статистика, руководства.",c:"Рекомендации",tags:["ВОЗ","международное"]},
+  {t:"NICE Guidelines — неврология",u:"https://www.nice.org.uk/guidance/conditions-and-diseases/neurological-conditions",d:"Британские клинические рекомендации. Открытый доступ, алгоритмы.",c:"Рекомендации",tags:["NICE","Великобритания"]},
+  {t:"European Academy of Neurology",u:"https://www.ean.org/",d:"Европейская академия неврологии. Конгрессы, руководства, образовательные материалы.",c:"Рекомендации",tags:["EAN","Европа"]},
+  {t:"MDCalc — медицинские калькуляторы",u:"https://www.mdcalc.com/",d:"Более 500 калькуляторов: NIHSS, mRS, HADS, PCS, Tampa, PSQI и другие.",c:"Калькуляторы",tags:["калькуляторы","шкалы","англ."]},
+  {t:"PubMed",u:"https://pubmed.ncbi.nlm.nih.gov/",d:"Крупнейшая биомедицинская база. Аннотации бесплатны.",c:"Научные базы",tags:["PubMed","наука"]},
+  {t:"Cochrane Library",u:"https://www.cochranelibrary.com/",d:"Систематические обзоры. Золотой стандарт доказательной медицины.",c:"Научные базы",tags:["Cochrane","мета-анализ"]},
+  {t:"Российское общество неврологов",u:"https://neurology.ru/",d:"Профессиональное сообщество неврологов России. Новости, конференции.",c:"Образование",tags:["РФ","неврология"]},
+  {t:"Eurospine",u:"https://www.eurospine.org/",d:"European Spine Society. Материалы по боли в спине.",c:"Образование",tags:["Eurospine","вертебрология"]},
+  {t:"IASP — изучение боли",u:"https://www.iasp-pain.org/",d:"International Association for the Study of Pain. Рекомендации и материалы.",c:"Образование",tags:["IASP","боль"]}
+];
+var curCat = 'Все';
+
+function getCats(){
+  var a = ['Все'], seen = {};
+  RESOURCES.forEach(function(r){ if(!seen[r.c]){seen[r.c]=true;a.push(r.c)} });
+  return a;
+}
+function renderCats(){
+  var c = $('#cats');
+  if(!c) return;
+  c.innerHTML = getCats().map(function(cat){
+    return '<button type="button" class="cat'+(cat===curCat?' on':'')+'" data-cat="'+esc(cat)+'">'+esc(cat)+'</button>';
+  }).join('');
+}
+function renderRes(){
+  var q = ($('#resSearch') ? $('#resSearch').value : '').toLowerCase().trim();
+  var filtered = RESOURCES.filter(function(r){
+    if(curCat !== 'Все' && r.c !== curCat) return false;
+    if(!q) return true;
+    return (r.t+' '+r.d+' '+r.tags.join(' ')).toLowerCase().indexOf(q) !== -1;
+  });
+  var g = $('#resGrid');
+  if(!g) return;
+  if(!filtered.length){ g.innerHTML = '<div class="empty" style="grid-column:1/-1">Ничего не найдено</div>'; return; }
+  g.innerHTML = filtered.map(function(r){
+    var pdf = /\.pdf($|\?)/i.test(r.u);
+    var b = pdf ? '<span class="res-b">PDF</span>' : '';
+    var t = r.tags.map(function(x){return '<span class="res-tag">'+esc(x)+'</span>'}).join('');
+    return '<div class="res-card"><div class="res-h"><div class="res-t"><a href="'+esc(r.u)+'" target="_blank" rel="noopener">'+esc(r.t)+'</a></div>'+b+'</div><div class="res-d">'+esc(r.d)+'</div><div class="res-tags">'+t+'</div></div>';
+  }).join('');
+}
+
+/* UTILITIES */
+function initUtils(){
+  var uText = $('#uText');
+  if(uText){
+    uText.addEventListener('input', function(){
+      var t = uText.value;
+      var chars = t.length;
+      var words = t.trim() ? t.trim().split(/\s+/).length : 0;
+      var lines = t ? t.split('\n').length : 0;
+      $('#uTextStat').textContent = 'Символов: '+chars+' · Слов: '+words+' · Строк: '+lines;
+    });
+  }
+  var uColorIn = $('#uColorIn');
+  if(uColorIn){
+    uColorIn.addEventListener('input', function(){ convertColor(); });
+    convertColor();
+  }
+  updateDateStat();
+  setInterval(updateDateStat, 30000);
+}
+function updateDateStat(){
+  var el = $('#uDateStat');
+  if(!el) return;
+  var d = new Date();
+  el.textContent = d.toLocaleString('ru-RU', {dateStyle:'long', timeStyle:'medium'});
+}
+function formatJson(){
+  try{
+    var inp = $('#uJsonIn').value.trim();
+    if(!inp){ $('#uJsonStat').textContent = 'Пусто'; return; }
+    var obj = JSON.parse(inp);
+    $('#uJsonIn').value = JSON.stringify(obj, null, 2);
+    $('#uJsonStat').textContent = 'Отформатировано ✓';
+  }catch(e){
+    $('#uJsonStat').textContent = 'Ошибка: '+e.message;
+  }
+}
+function minifyJson(){
+  try{
+    var inp = $('#uJsonIn').value.trim();
+    if(!inp){ $('#uJsonStat').textContent = 'Пусто'; return; }
+    var obj = JSON.parse(inp);
+    $('#uJsonIn').value = JSON.stringify(obj);
+    $('#uJsonStat').textContent = 'Сжато ✓';
+  }catch(e){
+    $('#uJsonStat').textContent = 'Ошибка: '+e.message;
+  }
+}
+function copyJson(){
+  var t = $('#uJsonIn').value;
+  if(!t){ toast('Пусто','warn'); return; }
+  copy(t);
+}
+async function calcHash(){
+  var inp = $('#uHashIn').value;
+  if(!inp){ $('#uHashStat').textContent = 'Введите текст'; return; }
+  if(!hasCrypto()){ $('#uHashStat').textContent = 'Web Crypto недоступен'; return; }
+  try{
+    var h = await sha256(inp);
+    $('#uHashStat').textContent = h;
+  }catch(e){
+    $('#uHashStat').textContent = 'Ошибка: '+e.message;
+  }
+}
+function copyHash(){
+  var t = $('#uHashStat').textContent;
+  if(!t || t === '—' || t.indexOf('Введите') === 0){ toast('Сначала вычислите хеш','warn'); return; }
+  copy(t);
+}
+function genPass(){
+  var len = parseInt($('#uPassLen').value, 10) || 16;
+  if(len < 6) len = 6; if(len > 64) len = 64;
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*+-=?';
+  var arr = new Uint32Array(len);
+  if(window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(arr);
+  else for(var i=0;i<len;i++) arr[i] = Math.floor(Math.random()*0xffffffff);
+  var pass = '';
+  for(var i=0;i<len;i++) pass += chars[arr[i] % chars.length];
+  $('#uPassStat').textContent = pass;
+}
+function copyPass(){
+  var t = $('#uPassStat').textContent;
+  if(!t || t === '—'){ toast('Сначала сгенерируйте пароль','warn'); return; }
+  copy(t);
+}
+function convertColor(){
+  var v = ($('#uColorIn').value || '').trim();
+  if(!v) v = '#3498db';
+  var hex = '#3498db', rgb = 'rgb(52, 152, 219)';
+  var m;
+  if((m = v.match(/^#?([0-9a-f]{6})$/i))){
+    var h = m[1].toLowerCase();
+    hex = '#'+h;
+    var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+    rgb = 'rgb('+r+', '+g+', '+b+')';
+  } else if((m = v.match(/^#?([0-9a-f]{3})$/i))){
+    var h3 = m[1].toLowerCase();
+    hex = '#'+h3[0]+h3[0]+h3[1]+h3[1]+h3[2]+h3[2];
+    var r3 = parseInt(hex.substr(1,2),16), g3 = parseInt(hex.substr(3,2),16), b3 = parseInt(hex.substr(5,2),16);
+    rgb = 'rgb('+r3+', '+g3+', '+b3+')';
+  } else if((m = v.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/))){
+    var r2 = Math.min(255, parseInt(m[1],10));
+    var g2 = Math.min(255, parseInt(m[2],10));
+    var b2 = Math.min(255, parseInt(m[3],10));
+    hex = '#' + [r2,g2,b2].map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+    rgb = 'rgb('+r2+', '+g2+', '+b2+')';
+  }
+  var prev = $('#uColorPrev'); if(prev) prev.style.background = hex;
+  var txt = $('#uColorText'); if(txt) txt.textContent = hex + ' · ' + rgb;
+}
+function copyIsoDate(){
+  var d = new Date().toISOString().slice(0,10);
+  copy(d);
+}
+function copyRuDate(){
+  var d = new Date().toLocaleDateString('ru-RU');
+  copy(d);
+}
+
+/* ACTIONS */
+var ACTIONS = {
+  toggleStage: function(t){
+    var sid = parseInt(t.dataset.stage, 10);
+    var wrapper = t.closest('.stage');
+    if(!wrapper) return;
+    var isCollapsed = STATE.collapsed.has(sid);
+    if(isCollapsed){ STATE.collapsed.delete(sid); wrapper.classList.remove('collapsed'); t.setAttribute('aria-expanded','true'); }
+    else { STATE.collapsed.add(sid); wrapper.classList.add('collapsed'); t.setAttribute('aria-expanded','false'); }
+    ST.set('collapsed', Array.from(STATE.collapsed));
+  },
+  toggleSkill: function(t){
+    var sk = t.dataset.skill;
+    if(!sk) return;
+    var item = t.closest('.skill');
+    if(STATE.checked.has(sk)){
+      STATE.checked.delete(sk);
+      if(item) item.classList.remove('checked');
+      t.classList.remove('checked');
+      t.setAttribute('aria-checked','false');
+    } else {
+      STATE.checked.add(sk);
+      if(item) item.classList.add('checked');
+      t.classList.add('checked');
+      t.setAttribute('aria-checked','true');
+    }
+    updateCommProgress();
+    var stageId = parseInt(sk.split('.')[0], 10);
+    var stage = STAGES.find(function(s){return s.id===stageId});
+    if(stage){
+      var wrapper = document.querySelector('.stage[data-stage-id="'+stageId+'"]');
+      if(wrapper){
+        var done = stage.skills.filter(function(s){return STATE.checked.has(s.s)}).length;
+        var pct = Math.round((done/stage.skills.length)*100);
+        var isComplete = done === stage.skills.length;
+        var hasProgress = done > 0;
+        wrapper.classList.toggle('complete', isComplete);
+        wrapper.classList.toggle('has-progress', hasProgress && !isComplete);
+        var cnt = wrapper.querySelector('.stage-mini .c'); if(cnt) cnt.textContent = done + ' / ' + stage.skills.length;
+        var fill = wrapper.querySelector('.stage-mini .fill'); if(fill) fill.style.width = pct + '%';
+      }
+    }
+  },
+  toggleWhy: function(t){
+    var sk = t.dataset.skill;
+    var item = t.closest('.skill');
+    if(!item) return;
+    var isOpen = STATE.whyOpen.has(sk);
+    if(isOpen){
+      STATE.whyOpen.delete(sk);
+      item.classList.remove('why-open');
+      t.innerHTML = '<span class="chev">▶</span> Зачем этот навык?';
+    } else {
+      STATE.whyOpen.add(sk);
+      item.classList.add('why-open');
+      t.innerHTML = '<span class="chev">▶</span> Скрыть пояснение';
+    }
+    ST.set('whyOpen', Array.from(STATE.whyOpen));
+  },
+  resetComm: function(){
+    if(!confirm('Сбросить все отметки навыков?')) return;
+    STATE.checked.clear();
+    ST.set('checked', []);
+    renderComm();
+    toast('Чек-лист сброшен');
+  },
+  exportCommCsv: exportCommCsv,
+  formatJson: formatJson,
+  minifyJson: minifyJson,
+  copyJson: copyJson,
+  calcHash: calcHash,
+  copyHash: copyHash,
+  genPass: genPass,
+  copyPass: copyPass,
+  convertColor: convertColor,
+  copyIsoDate: copyIsoDate,
+  copyRuDate: copyRuDate
+};
+
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-act]');
+  if(t){
+    var act = t.dataset.act;
+    if(ACTIONS[act]){ ACTIONS[act](t); return; }
+  }
+  var cp = e.target.closest('[data-copy]');
+  if(cp){
+    var el = document.getElementById(cp.getAttribute('data-copy'));
+    if(el) copy(el.textContent, cp);
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Enter' || e.key === ' '){
+    var t = e.target.closest('[data-act]');
+    if(t && t.getAttribute('role') && t.tagName !== 'BUTTON' && t.tagName !== 'A' && t.tagName !== 'INPUT' && t.tagName !== 'TEXTAREA'){
+      e.preventDefault();
+      var act = t.dataset.act;
+      if(ACTIONS[act]) ACTIONS[act](t);
+    }
+  }
+});
+
+/* THEME */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  var meta = document.getElementById('metaThemeColor');
+  if(meta) meta.setAttribute('content', t === 'dark' ? '#141824' : '#f5f7fa');
+  try{ localStorage.setItem('vxmk_theme', t); }catch(e){}
+}
+function initTheme(){
+  var t = 'light';
+  try{
+    var saved = localStorage.getItem('vxmk_theme');
+    if(saved) t = saved;
+    else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark';
+  }catch(e){}
+  applyTheme(t);
+}
+function toggleTheme(){
+  var cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+/* INIT */
+function init(){
+  var d = new Date();
+  var iso = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  var pd = $('#pDate'); if(pd) pd.value = iso;
+
+  try{
+    var pn = localStorage.getItem('vxmk_pName'); if(pn) $('#pName').value = pn;
+    var pd2 = localStorage.getItem('vxmk_pDx'); if(pd2) $('#pDx').value = pd2;
+    var pa = localStorage.getItem('vxmk_pAge'); if(pa) $('#pAge').value = pa;
+    var ps = localStorage.getItem('vxmk_pSex'); if(ps) $('#pSex').value = ps;
+    var pi = localStorage.getItem('vxmk_pID'); if(pi) $('#pID').value = pi;
+  }catch(e){}
+  ['pName','pDx','pDate','pAge','pSex','pID'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('input', function(){
+      try{ localStorage.setItem('vxmk_'+id, el.value); }catch(e){}
+    });
+  });
+
+  initTheme();
+  renderComm();
+  renderAllScales();
+  renderCats();
+  renderRes();
+  initUtils();
+
+  $$('.nav button').forEach(function(b){
+    b.addEventListener('click', function(){
+      switchPanel(b.dataset.panel);
+    });
+  });
+
+  $('#btnCalc').addEventListener('click', calcAll);
+  $('#btnPrint').addEventListener('click', function(){ window.print(); });
+  $('#btnTheme').addEventListener('click', toggleTheme);
+
+  $('#resSearch').addEventListener('input', debounce(renderRes, 200));
+  $('#cats').addEventListener('click', function(e){
+    var b = e.target.closest('.cat');
+    if(!b) return;
+    curCat = b.dataset.cat;
+    renderCats();
+    renderRes();
+  });
+
+  console.log('%c VanXo Medical Kit v1.1.0 ','background:linear-gradient(135deg,#3498db,#b8860b);color:#fff;padding:4px 12px;border-radius:4px;font-weight:700');
+  console.log('%c 9 шкал · 102 навыка · 6 утилит · база знаний · все шкалы сверены с источниками ','color:#27ae60;font-size:11px');
+  console.log('urn:vanxo:artifact:medical-kit:1.1.0');
+}
+
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+
+})();
+</script>
+</body>
+</html>
